@@ -30,6 +30,18 @@ Zchess is a web application that allows 2 people to play chess restfully.
       - index.html
       - tester.py
 
+### API
+
+| Url | Method | Requires Auth | Request | Response | Description |
+| :-: | :----: | :-----------: | :-----: | :------: | :---------: |
+| /users | POST | false | `{username:"", password:"", email:"", fullname:""}` | None | Creates a new user |
+| /login | POST | false | `{username_or_email:"", password:""}` | `{token:""}` | Handles login and returns a token |
+| /games | POST | true | `{owner_id:"", opponent_id:"", color:"", "random", time:"05:00"}` | `{game_id:""}` | Creates a new game and challenges the players |
+| /messages | POST | true | `{game_id:"", content:""}` | None | Creates a chat message |
+| /games/:id/play | POST | true | `{move:"", resign:false, draw:false}` | None | Creates a chat message |
+| /uploads | POST | true | `{type:"", data:base64("")}` | `{avatar_url:""}` | Uploads a users avatar |
+| /uploads/*| GET | false | None | `image@url` | Gets an image from the database |
+
 ### Backend Uses `Node.js` and `MySQL`. Allows the user to RESTfully CRUD data model:
   #### Imports
   - argon2 - Used to hash passwords and verify them.

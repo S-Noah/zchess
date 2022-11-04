@@ -9,26 +9,28 @@
         const fileToBase64 = async (file) => new Promise((resolve, reject) => {
             const reader = new FileReader()
             reader.readAsDataURL(file)
-            reader.onload = () => resolve(reader.result.substr(reader.result.indexOf(',') + 1))
+            reader.onload = () => resolve(reader.result) // 
             reader.onerror = (e) => reject(e)
         });
         const upload_image = () => {
             var file = image_chooser.files[0];
             fileToBase64(file)
             .then((encoded) => {
-                console.log(encoded);
+                var type = encoded.slice(encoded.indexOf('/') + 1, encoded.indexOf(';base64'));
+                var data = encoded.substr(encoded.indexOf(',') + 1)
                 options = {
                     method:'post',
                     mode:'cors',
                     headers:{
-                        'Content-Type':'application/json'
+                        'Content-Type':'application/json',
+                        'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ2NTkyYTIzLTVjODAtMTFlZC1iYWY1LTE4MzFiZmIzYjYyNCIsInVzZXJuYW1lIjoiemVybyIsImlhdCI6MTY2NzU5ODEyMywiZXhwIjoxNjY3NTk5MTIzfQ.QjJSKW8hzLaZ-XZfKHSHGc2rlTh1V5h1bGH5G4kgzmQ'
                     },
-                    body:JSON.stringify({data:encoded})
+                    body:JSON.stringify({type:type, data:data})
                 }
-                fetch('http://127.0.0.1:3000/test', options)
+                fetch('http://127.0.0.1:3000/upload', options)
                 .then(response => response.json())
                 .then((data) => {
-                    console.log(data);
+                    img_avatar.src = data.avatar_url
                 })
             });
         }
@@ -41,25 +43,25 @@
                 },
                 body:JSON.stringify({username:'zero', password:'testing123', fullname:'zerothechosen'})
             }
-            fetch('http://127.0.0.1:3000/login', options)
+            fetch('http://127.0.0.1:3000/users', options)
             .then(response => response.json())
             .then((data) => {
                 console.log(data);
             })
         }
-        const verify_token = () => {
+        const log_in = () => {
             options = {
                 method:'post',
                 mode:'cors',
                 headers:{
                     'Content-Type':'application/json'
                 },
-                body:JSON.stringify({"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inplcm8iLCJpYXQiOjE2Njc1NjYyMDUsImV4cCI6MTY2NzU2NzIwNX0.eQUE8eg_1gqCVih2mnsxpPOv_hznUik3XTZmQyWu0gk"})
+                body:JSON.stringify({username:'zero', password:'testing123'})
             }
-            fetch('http://127.0.0.1:3000/token/verify', options)
+            fetch('http://127.0.0.1:3000/login', options)
             .then(response => response.json())
             .then((data) => {
-                console.log(data);
+                console.log(data.token);
             })
         }
     </script>
@@ -67,8 +69,11 @@
 </head>
 <body>
     <div id="output"></div>
-    <button onclick="sign_up()">Login</button>
+    <img id="img_avatar"/>
+    <button onclick="verify_token()">verify</button>
+    <button onclick="log_in()">Login</button>
     <button onclick="upload_image()">Upload</button>
+    <button onclick="sign_up()">Sign Up</button>
     <input id="image_chooser" type="file" accept="image/*"/>
 </body>
 </html>
