@@ -3,7 +3,7 @@ CREATE TABLE users (
     username VARCHAR(255) UNIQUE,
     passhash VARCHAR(255),
     fullname VARCHAR(100),
-
+    avatar_url = VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )
@@ -16,7 +16,7 @@ CREATE TABLE games (
     white_time INT,
     black_time INT,
     is_active BOOLEAN DEFAULT 1,
-    final_fen VARCHAR(120),
+    fen VARCHAR(120),
     pgn TEXT(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX `fk_white_id_idx` (`white_id` ASC) VISIBLE,
@@ -42,7 +42,6 @@ CREATE TABLE friends (
 CREATE TABLE messages (
     owner_id BINARY(16),
     game_id BINARY(16),
-    recipient_id BINARY(16),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content TEXT(100)
 )

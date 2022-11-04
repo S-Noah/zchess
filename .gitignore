@@ -1,5 +1,4 @@
-backend/.env
-backend/node_modules
-backend/tester.py
-backend/package.json
-backend/package-lock.json
+src/backend/.env
+src/backend/node_modules
+src/backend/package-lock.json
+/uploads
