@@ -4,6 +4,21 @@
 
 Zchess is a web application that allows 2 people to play chess restfully. 
 
+### Requirements
+  - Node.js
+    - argon2 - Used to hash passwords and verify them.
+    - cors - Used to black/white list certain traffic.
+    - crypto - Used to generate secrets.
+    - express - Used to process requests, passed off to custom handlers.
+    - openssl - Used to create .pem certs to host HTTPS.
+    - jsonwebtoken - Used to sign and verify Auth Tokens.
+    - mysql2 - Database Wrapper.
+    - fs - Javascript Async FileSystem.
+    
+
+### Installation
+  1. Clone repository from 
+
 ### Backend
 - Uses `Node.js` and `MySQL`. Allows the user to RESTfully manipulate their:
   - Data Model in MYSQL:
