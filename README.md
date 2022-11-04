@@ -13,11 +13,12 @@ Zchess is a web application that allows 2 people to play chess restfully.
   2. cd to backend
   3. run `npm install` to install required packages.
   4. open MySQL
-    1. Create a database called `zchess`
-    2. Create a user called `zero` with a sql_native_password
-    3. Grant all privileges for `zero` on `zchess`
-    4. Flush privileges.
-  5. Run `npm start`
+  5. Create a database called `zchess`
+  6. Create a user called `zero` with a sql_native_password
+  7. Grant all privileges for `zero` on `zchess`
+  8. Flush privileges.
+  9. Create .env file with `DBPASS` and `TOKEN_SECRET`.
+  10. Run `npm start`
 
 ### Directory
   - src
