@@ -6,8 +6,6 @@ Zchess is a web application that allows 2 people to play chess restfully.
 
 ### Backend
 - Uses `Node.js` and `MySQL`. Allows the user to RESTfully manipulate their:
-  - Data Model in `Node.js`:
-    `{
   - Data Model in MYSQL:
     - *users*:
       - id : `BINARY(16)` - uuid,
