@@ -1,4 +1,4 @@
-src/backend/.env
-src/backend/node_modules
-src/backend/package-lock.json
-src/backend/uploads
+src/.env
+src/node_modules
+src/package-lock.json
+src/avatars

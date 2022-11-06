@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Tester</title>
+    <title>Zchess</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="index.js"></script>
+    <script src="http://127.0.0.1:3000/index.js"></script>
     <script>
         $(document).ready(() => {
             var bearer = localStorage.getItem('bearer');
@@ -13,10 +13,8 @@
                 me()
             }
         })
-        
     </script>
     <style>
-    
         #img_avatar{
             width: 10em;
             border-radius: 20%;
@@ -28,11 +26,10 @@
 <body>
     <div id="output"></div>
     <img id="img_avatar"/>
-    <button onclick="me()">me</button>
-    <button onclick="log_in()">Login</button>
-    <button onclick="upload_image()">Upload</button>
     <button onclick="sign_up()">Sign Up</button>
-    <button onclick="localStorage.clear()">Clear</button>
+    <button onclick="log_in()">Login</button>
+    <button onclick="log_out()">Logout</button>
+    <button onclick="upload_image()">Upload</button>
     <input id="image_chooser" type="file" accept="image/*"/>
 </body>
 </html>

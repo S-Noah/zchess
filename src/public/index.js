@@ -28,7 +28,7 @@ const upload_image = () => {
                     },
                     body:JSON.stringify({type:type, data:data})
                 }
-                fetch(hostname + '/uploads', options)
+                fetch(`${hostname}/avatars`, options)
                 .then(response => response.json())
                 .then((data) => {
                     update(data.avatar_url);
@@ -95,4 +95,8 @@ const me = async () => {
             update(data.avatar_url);
         });
     }
+}
+const log_out = () => {
+    localStorage.clear();
+    img_avatar.src = "";
 }

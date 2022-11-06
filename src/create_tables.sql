@@ -1,5 +1,6 @@
 CREATE TABLE users (
     id BINARY(16) PRIMARY KEY DEFAULT (uuid_to_bin(uuid())),
+    token_secret NOT NULL,
     username VARCHAR(255) UNIQUE,
     passhash VARCHAR(255),
     fullname VARCHAR(100),
