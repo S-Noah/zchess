@@ -8,6 +8,14 @@ const fs = require('fs');
 const crypto = require('crypto');
 const argon2 = require('argon2');
 const middleware = require('./middleware')
+
+// Startup Prechecks
+fs.mkdir(`${__dirname}/public/avatars`, (err) => {
+    if (err) {
+        return console.error(err);
+    }
+    console.log('Avatars directory created...');
+});
  
 // Server Configuration.
 const app = new express();
@@ -24,7 +32,7 @@ const db = mysql.createConnection({
 
 db.connect((err) =>{
     if(err) console.log(err);
-    else console.log('Connected to zchess database');
+    else console.log('Connected to zchess database...');
 });
 
 // Endpoints
@@ -85,6 +93,7 @@ app.post('/login', async (req, res) => {
             var avatar_url = results[0].avatar_url;
             var full_path = `${__dirname}/public/${avatar_url}`;
             if(avatar_url !== null && fs.existsSync(full_path)){
+                console.log("unlinking", full_path);
                 fs.unlink(full_path, (err) =>{
                     if(err) console.log(err);
                 });
