@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id BINARY(16) PRIMARY KEY DEFAULT (uuid_to_bin(uuid())),
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(320) UNIQUE NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE games (
+CREATE TABLE IF NOT EXISTS games (
     id BINARY(16) PRIMARY KEY DEFAULT (uuid_to_bin(uuid())),
     white_id BINARY(16) NOT NULL,
     black_id BINARY(16) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE games (
         ON UPDATE NO ACTION
 );
 
-CREATE TABLE friends (
+CREATE TABLE IF NOT EXISTS friends (
     owner_id BINARY(16) NOT NULL,
     friend_id BINARY(16) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -52,7 +52,7 @@ CREATE TABLE friends (
         ON UPDATE NO ACTION
 );
 
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     owner_id BINARY(16),
     game_id BINARY(16),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

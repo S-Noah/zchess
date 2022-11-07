@@ -24,15 +24,21 @@ app.use(cors({origin: '*', allowedHeaders:['Content-Type, Authorization']}))
 
 // Database Configuration.
 const db = mysql.createConnection({
-    host:'localhost',
-    user:'zero',
-    password:process.env.DBPASS,
-    database:'zchess'
+    host:process.env.DB_HOST,
+    user:process.env.DB_USER,
+    password:process.env.DB_PASS,
+    database:process.env.DB_NAME,
+    multipleStatements: true
 });
 
 db.connect((err) =>{
-    if(err) console.log(err);
-    else console.log('Connected to zchess database...');
+    if(err) return console.log(err);
+    console.log('Connected to zchess database...');
+    console.log("loading schema...");
+    var create_statements = fs.readFileSync('create_tables.sql').toString();
+    db.query(create_statements, (err, results, fields) => {
+        if(err)console.log(err);
+    })
 });
 
 // Endpoints
@@ -50,6 +56,32 @@ db.connect((err) =>{
  * Parmeters: [email, username, password], (fullname)
  * Response: None
  */
+/** 
+ * Get uploaded content.
+ * @url the request url.
+ * Request: None
+ * Response: file@url
+ */
+
+ app.get('/stream', async (req, res) => {
+    res.setHeader('Transfer-Encoding', 'chunked');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.write('[')
+    let i = 0;
+    for(let i = 0; i < 100; i++){
+        if(i % 4 == 0){
+            res.write(JSON.stringify({test:i}) + ',');
+        }
+        else{
+            res.write("");
+        }
+        
+        await new Promise((res) => {setTimeout(res, 1000)});
+    }
+    res.write(']')
+    res.end();
+});
+
 app.post('/users', async (req, res) =>{
     const passhash = await argon2.hash(req.body.password);
     db.execute('INSERT INTO users(email, passhash, username, fullname) VALUES(?, ?, ?, ?)',
@@ -152,29 +184,7 @@ app.get('/*', (req, res) => {
     }
 });
 
-/** 
- * Get uploaded content.
- * @url the request url.
- * Request: None
- * Response: file@url
- */
- app.get('/stream', async (req, res) => {
-    res.setHeader('Transfer-Encoding', 'chunked');
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    let i = 0;
-    for(let i = 0; i < 100; i++){
-        if(i % 4 == 0){
-            res.write(JSON.stringify({test:i}) + '\n');
-        }
-        else{
-            res.write("\n");
-        }
-        
-        await new Promise((res) => {setTimeout(res, 1000)});
-    }
-    
-    res.end();
-});
+
 
 // Start Server.
 app.listen(3000, () => console.log('Server Started...'));

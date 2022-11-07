@@ -65,11 +65,17 @@ const upload_image = () => {
 }
 
 const sign_up = () => {
+    // sign_up_data = {
+    //     email:'nsarge@mail.endicott.edu',
+    //     username:'zero', 
+    //     password:'testing123', 
+    //     fullname:'zerothechosen'
+    // }
     sign_up_data = {
-        email:'nsarge@mail.endicott.edu',
-        username:'zero', 
-        password:'testing123', 
-        fullname:'zerothechosen'
+        email:input_email_register.value,
+        username:input_username_register.value,
+        password:input_password_register.value,
+        fullname:input_fullname_register.value,
     }
     options = {
         method:'post',
