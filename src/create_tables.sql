@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS games (
     fen VARCHAR(120),
     pgn TEXT(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX `ga_white_id_idx` (`white_id` ASC) VISIBLE,
-    INDEX `ga_black_id_idx` (`black_id` ASC) VISIBLE,
+    INDEX `ga_white_id_idx` (`white_id`),
+    INDEX `ga_black_id_idx` (`black_id`),
     CONSTRAINT `fk_white_id`
         FOREIGN KEY (`white_id`)
         REFERENCES `zchess`.`users` (`id`)
@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS friends (
     owner_id BINARY(16) NOT NULL,
     friend_id BINARY(16) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX `fr_owner_id_idx` (`owner_id` ASC) VISIBLE,
-    INDEX `fr_friend_id_idx` (`friend_id` ASC) VISIBLE,
+    INDEX `fr_owner_id_idx` (`owner_id`),
+    INDEX `fr_friend_id_idx` (`friend_id`),
     CONSTRAINT `fk_owner_id`
         FOREIGN KEY (`owner_id`)
         REFERENCES `zchess`.`users` (`id`)
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS messages (
     game_id BINARY(16),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content TEXT(100),
-    INDEX `me_owner_id_idx` (`owner_id` ASC) VISIBLE,
-    INDEX `me_game_id_idx` (`game_id` ASC) VISIBLE,
+    INDEX `me_owner_id_idx` (`owner_id`),
+    INDEX `me_game_id_idx` (`game_id`),
     CONSTRAINT `me_fk_owner_id`
         FOREIGN KEY (`owner_id`)
         REFERENCES `zchess`.`users` (`id`)
