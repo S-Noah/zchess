@@ -12,7 +12,7 @@ const middleware = require('./middleware')
 // Startup Prechecks
 fs.mkdir(`${__dirname}/public/avatars`, (err) => {
     if (err) {
-        return console.error(err);
+        return;
     }
     console.log('Avatars directory created...');
 });
@@ -41,9 +41,9 @@ db.connect((err) =>{
  * Parmeters: None
  * Response: file@public/index.html
 */
-app.get('/', (req, res) =>{
-    res.sendFile(`${__dirname}/public/index.html`)
-});
+// app.get('/', (req, res) =>{
+//     res.sendFile(`${__dirname}/public/index.html`)
+// });
 // Endpoints
 /** 
  * Create User.
@@ -52,9 +52,15 @@ app.get('/', (req, res) =>{
  */
 app.post('/users', async (req, res) =>{
     const passhash = await argon2.hash(req.body.password);
-    db.execute('INSERT INTO users(username, passhash, fullname) VALUES(?, ?, ?)',
-    [req.body.username, passhash, req.body.fullname], (err, results, fields) => {
-        res.json();
+    db.execute('INSERT INTO users(email, passhash, username, fullname) VALUES(?, ?, ?, ?)',
+    [req.body.email, passhash,  req.body.username, req.body.fullname], (err, results, fields) => {
+        if(err) {
+            console.error(err);
+            res.sendStatus(400); 
+        }
+        else{
+            res.sendStatus(201);
+        }
     });
 });
 
@@ -93,7 +99,6 @@ app.post('/login', async (req, res) => {
             var avatar_url = results[0].avatar_url;
             var full_path = `${__dirname}/public/${avatar_url}`;
             if(avatar_url !== null && fs.existsSync(full_path)){
-                console.log("unlinking", full_path);
                 fs.unlink(full_path, (err) =>{
                     if(err) console.log(err);
                 });

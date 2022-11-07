@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zchess</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="http://127.0.0.1:3000/index.js"></script>
     <script>
@@ -15,21 +18,90 @@
         })
     </script>
     <style>
+        :root{
+            --og-grey: #323232 ;
+        }
+        *{
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 0;
+            outline: 0;
+        }
+        html{
+            background-color: var(--og-grey);
+        }
+        h1, h3 {
+            color: #FFFFFF;
+            
+        }
         #img_avatar{
             width: 10em;
             border-radius: 20%;
             object-fit: cover;
             aspect-ratio: 1/1;
         }
+        .center{
+            margin: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .og-form{
+            display: grid;
+        }
+        .og-form input{
+            width: 15em;
+            margin-bottom: 0.5em;
+            padding: 0.25em;
+            border: 0;
+            border-radius: 0.5em;
+            font-size: larger;
+        }
+        .og-form button{
+            width: 6em; 
+            margin-left: auto;
+            border: 0;
+            border-radius: 0.25em;
+            font-size: medium;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div id="output"></div>
-    <img id="img_avatar"/>
-    <button onclick="sign_up()">Sign Up</button>
-    <button onclick="log_in()">Login</button>
-    <button onclick="log_out()">Logout</button>
-    <button onclick="upload_image()">Upload</button>
-    <input id="image_chooser" type="file" accept="image/*"/>
+    <!-- <div id="og_debug">
+        <button onclick="sign_up()">Sign Up</button>
+        <button onclick="log_in()">Login</button>
+        <button onclick="log_out()">Logout</button>
+        <button onclick="upload_image()">Upload</button>
+        <input id="image_chooser" type="file" accept="image/*"/>
+    </div> -->
+    <div id="og_signup" class="og-form center hidden">
+        <h1>Zchess</h1>
+        <h3>Email</h3>
+        <input id="input_email" type="email"/>
+        <h3>Username</h3>
+        <input id="input_username_register" type="text"/>
+        <h3>Password</h3>
+        <input id="input_password_register" type="password"/>
+        <h3>Full Name</h3>
+        <input id="input_fullname" type="password"/>
+        <button onclick="sign_up()">Sign Up</button>
+    </div>
+    <div id="og_home" class="hidden">
+        <img id="img_avatar"/>
+        <button onclick="log_out()">Logout</button>
+    </div>
+    <div id="og_login" class="og-form center">
+        <h1>Zchess</h1>
+        <h3>Username</h3>
+        <input id="input_username_login" type="text"/>
+        <h3>Password</h3>
+        <input id="input_password_login" type="password"/>
+        <button onclick="log_in()">Login</button>
+        <button onclick="register()">Register</button>
+    </div>
 </body>
 </html>

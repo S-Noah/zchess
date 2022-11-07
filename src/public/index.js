@@ -5,10 +5,32 @@ const fileToBase64 = async (file) => new Promise((resolve, reject) => {
     reader.onload = () => resolve(reader.result)
     reader.onerror = (e) => reject(e)
 });
-const update = (avatar_url) => {
-    var timestamp = new Date().getTime();
-    img_avatar.src = `${hostname}/${avatar_url}?t=${timestamp}`;
+
+const setHidden = (element, isHidden=true) => {
+    if(isHidden){
+        element.classList.add('hidden')
+    }
+    else{
+        element.classList.remove('hidden')
+    }
 }
+
+const update = (avatar_url) => {
+    console.log(avatar_url)
+    if(avatar_url === undefined){
+        img_avatar.src = "";
+        setHidden(og_home);
+        setHidden(og_login, false);
+    }
+    else{
+        var timestamp = new Date().getTime();
+        img_avatar.src = `${hostname}/${avatar_url}?t=${timestamp}`;
+        setHidden(og_login);
+        setHidden(og_home, false);
+    }
+    
+}
+
 const upload_image = () => {
     var bearer = localStorage.getItem('bearer');
     if(bearer !== null){
@@ -21,7 +43,6 @@ const upload_image = () => {
                 options = {
                     method:'post',
                     mode:'cors',
-                    cache:'no-cache',
                     headers:{
                         'Content-Type':'application/json',
                         'Authorization':`Bearer ${bearer}`
@@ -37,33 +58,53 @@ const upload_image = () => {
         }
     }
 }
+
 const sign_up = () => {
+    sign_up_data = {
+        email:'nsarge@mail.endicott.edu',
+        username:'zero', 
+        password:'testing123', 
+        fullname:'zerothechosen'
+    }
     options = {
         method:'post',
         mode:'cors',
         headers:{
             'Content-Type':'application/json'
         },
-        body:JSON.stringify({username:'zero', password:'testing123', fullname:'zerothechosen'})
+        body:JSON.stringify(sign_up_data)
     }
     fetch(hostname + '/users', options)
 }
+
 const log_in = () => {
+    let username = input_username_login.value;
+    let password = input_password_login.value;
+    if(username === '' || password === ''){
+        return;
+    }
+    log_in_data = {
+        username: username, 
+        password: password
+    }
     options = {
         method:'post',
         mode:'cors',
         headers:{
             'Content-Type':'application/json'
         },
-        body:JSON.stringify({username:'zero', password:'testing123'})
+        body:JSON.stringify(log_in_data)
     }
     fetch('http://127.0.0.1:3000/login', options)
     .then(response => response.json())
     .then((data) => {
         localStorage.setItem('bearer', data.token)
         me();
+        setHidden(og_home);
+        setHidden(og_login);
     })
 }
+
 const stream = async () => {
     fetch(hostname +'/stream')
     .then(res => {
@@ -78,12 +119,12 @@ const stream = async () => {
         }
     })
 }
+
 const me = async () => {
     var bearer = localStorage.getItem('bearer');
     if(bearer !== null){
         options = {
         method:'get',
-        cache:'no-cache',
         mode:'cors',
             headers:{
                 'Authorization':`Bearer ${bearer}`
@@ -98,5 +139,12 @@ const me = async () => {
 }
 const log_out = () => {
     localStorage.clear();
-    img_avatar.src = "";
+    setHidden(og_home);
+    setHidden(og_login, false);
+    update()
+}
+
+const register = () => {
+    setHidden(og_login);
+    setHidden(og_signup, false);
 }
