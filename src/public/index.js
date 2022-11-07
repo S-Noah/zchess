@@ -15,16 +15,21 @@ const setHidden = (element, isHidden=true) => {
     }
 }
 
-const update = (avatar_url) => {
-    console.log(avatar_url)
-    if(avatar_url === undefined){
+const update = (data) => {
+    if(data === undefined){
         img_avatar.src = "";
         setHidden(og_home);
         setHidden(og_login, false);
+        return;
     }
     else{
         var timestamp = new Date().getTime();
-        img_avatar.src = `${hostname}/${avatar_url}?t=${timestamp}`;
+        if(data.avatar_url !== undefined){
+            img_avatar.src = `${hostname}/${data.avatar_url}?t=${timestamp}`;
+        }
+        if(data.username !== undefined){
+            h_username.innerHTML = data.username;
+        }
         setHidden(og_login);
         setHidden(og_home, false);
     }
@@ -52,7 +57,7 @@ const upload_image = () => {
                 fetch(`${hostname}/avatars`, options)
                 .then(response => response.json())
                 .then((data) => {
-                    update(data.avatar_url);
+                    update(data);
                 })
             });
         }
@@ -100,8 +105,8 @@ const log_in = () => {
     .then((data) => {
         localStorage.setItem('bearer', data.token)
         me();
-        setHidden(og_home);
-        setHidden(og_login);
+        // setHidden(og_home);
+        // setHidden(og_login);
     })
 }
 
@@ -133,7 +138,7 @@ const me = async () => {
         fetch(hostname + '/me', options)
         .then(res => res.json())
         .then(data => {
-            update(data.avatar_url);
+            update(data);
         });
     }
 }
