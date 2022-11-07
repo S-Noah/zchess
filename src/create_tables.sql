@@ -24,12 +24,12 @@ CREATE TABLE IF NOT EXISTS games (
     INDEX `ga_black_id_idx` (`black_id`),
     CONSTRAINT `fk_white_id`
         FOREIGN KEY (`white_id`)
-        REFERENCES `zchess`.`users` (`id`)
+        REFERENCES `users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_black_id`
         FOREIGN KEY (`black_id`)
-        REFERENCES `zchess`.`users` (`id`)
+        REFERENCES `users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION
 );
@@ -42,12 +42,12 @@ CREATE TABLE IF NOT EXISTS friends (
     INDEX `fr_friend_id_idx` (`friend_id`),
     CONSTRAINT `fk_owner_id`
         FOREIGN KEY (`owner_id`)
-        REFERENCES `zchess`.`users` (`id`)
+        REFERENCES `users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `fk_friend_id`
         FOREIGN KEY (`friend_id`)
-        REFERENCES `zchess`.`users` (`id`)
+        REFERENCES `users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION
 );
@@ -61,12 +61,12 @@ CREATE TABLE IF NOT EXISTS messages (
     INDEX `me_game_id_idx` (`game_id`),
     CONSTRAINT `me_fk_owner_id`
         FOREIGN KEY (`owner_id`)
-        REFERENCES `zchess`.`users` (`id`)
+        REFERENCES `users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     CONSTRAINT `me_fk_game_id`
         FOREIGN KEY (`game_id`)
-        REFERENCES `zchess`.`games` (`id`)
+        REFERENCES `games` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION
 );
