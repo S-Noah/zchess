@@ -11,6 +11,7 @@ It allows users to create an account and upload a picture. It also allows them t
 
   - src
       - index.js - Backend Index.
+      - middleware.js - Handles Auth.
       - create_tables.sql
       - package.json
       - .env - Safely stores database credentials and secret per machine.
@@ -60,7 +61,7 @@ It allows users to create an account and upload a picture. It also allows them t
 | /messages | POST | true | `{game_id:"", content:""}` | None | Creates a chat message |
 | /games/:id/play | POST | true | `{move:"", resign:false, draw:false}` | None | Creates a chat message |
 | /avatars | POST | true | `{type:"", data:base64("")}` | `{avatar_url:""}` | Uploads a users avatar |
-| /stream | GET | true | NONE | `game or chat json stream` | Gets the current streams for the authed user |
+| /stream | GET | true | None | `game or chat json stream` | Gets the current streams for the authed user |
 
 
 ## Backend
