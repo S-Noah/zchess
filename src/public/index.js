@@ -65,12 +65,6 @@ const upload_image = () => {
 }
 
 const sign_up = () => {
-    // sign_up_data = {
-    //     email:'nsarge@mail.endicott.edu',
-    //     username:'zero', 
-    //     password:'testing123', 
-    //     fullname:'zerothechosen'
-    // }
     sign_up_data = {
         email:input_email_register.value,
         username:input_username_register.value,
@@ -106,7 +100,7 @@ const log_in = () => {
         },
         body:JSON.stringify(log_in_data)
     }
-    fetch('http://127.0.0.1:3000/login', options)
+    fetch(hostname + '/login', options)
     .then(response => response.json())
     .then((data) => {
         localStorage.setItem('bearer', data.token)
