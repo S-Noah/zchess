@@ -55,7 +55,7 @@ It allows users to create an account and upload a picture. It also allows them t
 | /*| GET | false | None | `file@public/url` | Gets the file at the public/url |
 | /users | POST | false | `{username:"", password:"", email:"", fullname:""}` | None | Creates a new user |
 | /login | POST | false | `{username:"", password:""}` | `{token:""}` | Handles login and returns a token |
-| /me | GET | TRUE | None | `{"id":"b44ccd61-bd4f-40f1-a3c8-1f5bac95c94f", "username":"zero", "email":"zero@noahsarge.com", "full name":"zero lamperouge", "avatar_url":"avatars/zero.gif", "created_at":"2022-11-08T04:38:46+0000", "updated_at":"2022-11-08T04:38:46+0000"}` | Gets the authed user |
+| /me | GET | TRUE | None | `{"id":"", "username":"", "email":"", "fullname":"", "avatar_url":"", "created_at":"", "updated_at":""}` | Gets the authed user |s
 | /games | POST | true | `{owner_id:"", opponent_id:"", color:"", "random", time:"05:00"}` | `{game_id:""}` | Creates a new game and challenges the players |
 | /messages | POST | true | `{game_id:"", content:""}` | None | Creates a chat message |
 | /games/:id/play | POST | true | `{move:"", resign:false, draw:false}` | None | Creates a chat message |
