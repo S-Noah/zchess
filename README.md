@@ -43,7 +43,7 @@ It allows users to create an account and upload a picture. It also allows them t
   4. Open MySQL
   5. Create a database `your_db`
   6. Create a `user` with a `password`
-  7. Grant all privileges for your `user` on `your_db`6
+  7. Grant all privileges for your `user` on `your_db`
   8. Flush privileges.
   9. Create .env file with `DB_HOST, DB_USER, DB_PASS`, `DB_NAME`, and `TOKEN_SECRET`.
   10. Run `npm start`
