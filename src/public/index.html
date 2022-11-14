@@ -8,55 +8,73 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="http://127.0.0.1:3000/styles/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="http://127.0.0.1:3000/index.js"></script>
     <script>
-        $(document).ready(() => {
+        document.addEventListener("DOMContentLoaded", () => {
+            image_avatar.addEventListener('click', (evt) => {
+                document.getElementById('image_chooser').click();
+            });
+            image_chooser.addEventListener('change', upload_image);
             var bearer = localStorage.getItem('bearer');
             if(bearer !== null){
                 me()
             }
-            $(document).on('click', '#img_avatar', (evt) => {
-                $('#image_chooser').click();
-            })
-            $('#image_chooser').change(() => {
-                upload_image();
-            })
-        })
+            // socket.onAny((event, ...args) => {
+            //     console.log(event, args);
+            // });
+            // function test(){
+            //     var socket = io()
+            //     socket.emit('chat message', "LOL");
+            // }
+        });
+        
     </script>
 </head>
 <body>
-    <!-- <div id="og_debug">
-        <button onclick="sign_up()">Sign Up</button>
-        <button onclick="log_in()">Login</button>
-        <button onclick="log_out()">Logout</button>
-        <button onclick="upload_image()">Upload</button>
-        <input id="image_chooser" type="file" accept="image/*"/>
-    </div> -->
     <div id="og_signup" class="og-form center hidden">
         <h1>Zchess</h1>
-        <h3>Email</h3>
-        <input id="input_email_register" type="email"/>
-        <h3>Username</h3>
-        <input id="input_username_register" type="text"/>
-        <h3>Password</h3>
-        <input id="input_password_register" type="password"/>
-        <h3>Full Name</h3>
-        <input id="input_fullname_register" type="text"/>
+        <form name="signup">
+            <h3>Email</h3>
+            <input name="email" type="email"/>
+            <h3>Username</h3>
+            <input name="username" type="text"/>
+            <h3>Password</h3>
+            <input name="password" type="password"/>
+            <h3>Full Name</h3>
+            <input name="fullname" type="text"/>
+        </form>
         <button onclick="sign_up()">Sign Up</button>
     </div>
     <div id="og_home" class="hidden">
-        <img id="img_avatar"/>
+        <img id="image_avatar" class="avatar"/>
         <input id="image_chooser" type="file" accept="image/*" class="hidden"/>
         <h3 id="h_username"></h3>
         <button onclick="log_out()">Logout</button>
+    
+        <div id="og_play" class="og-form2 center">
+            <form name="play">
+                <h3>Opponent</h3>
+                <input name="opponent" type="text"/>
+                <h3>Time Limit</h3>
+                <input name="time_limit" type="text"/>
+                <h3>Color</h3>
+                <div>
+                    <button>White</button>
+                    <button>Random</button>
+                    <button>Black</button>
+                </div>
+            </form>
+        </div>
     </div>
     <div id="og_login" class="og-form center">
         <h1>Zchess</h1>
-        <h3>Username</h3>
-        <input id="input_username_login" type="text"/>
-        <h3>Password</h3>
-        <input id="input_password_login" type="password"/>
+        <form name="login">
+            <h3>Username</h3>
+            <input name="username" type="text"/>
+            <h3>Password</h3>
+            <input name="password" type="password"/>
+        </form>
         <button onclick="log_in()">Login</button>
         <button onclick="register()">Register</button>
     </div>

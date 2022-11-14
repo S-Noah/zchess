@@ -18,9 +18,9 @@ It allows users to create an account and upload a picture. It also allows them t
     - public
       - avatars - All User Avatar Uploads
         - zero.gif
-      -styles
-        -main.css
-      -favicon.ico
+      - styles
+        - main.css
+      - favicon.ico
       - index.html - Frontend Index.
       - index.js
 
@@ -31,6 +31,7 @@ It allows users to create an account and upload a picture. It also allows them t
 <http://noahsarge.com>
 
 ### Requirements
+
   - MySQL
   - Node.js
 

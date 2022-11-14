@@ -2,12 +2,15 @@
 require('dotenv').config(); // Import Environment Variables.
 const express = require("express");
 const cors = require("cors");
-const jwt = require('jsonwebtoken');
+const http = require('http');
 const mysql = require('mysql2');
+const jwt = require('jsonwebtoken');
+
 const fs = require('fs');
 const crypto = require('crypto');
 const argon2 = require('argon2');
-const middleware = require('./middleware')
+const middleware = require('./middleware');
+const socket = require('socket.io');
 
 // Startup Prechecks
 fs.mkdir(`${__dirname}/public/avatars`, (err) => {
@@ -19,6 +22,9 @@ fs.mkdir(`${__dirname}/public/avatars`, (err) => {
  
 // Server Configuration.
 const app = new express();
+const server = http.createServer(app);
+const io = new socket.Server(server);
+
 app.use(express.json({limit: '5mb'}))
 app.use(cors({origin: '*', allowedHeaders:['Content-Type, Authorization']}))
 
@@ -42,6 +48,8 @@ db.connect((err) =>{
 });
 
 // Endpoints
+
+
 /** 
  * Get Homepage.
  * Parmeters: None
@@ -62,25 +70,22 @@ db.connect((err) =>{
  * Request: None
  * Response: file@url
  */
-
- app.get('/stream', async (req, res) => {
-    res.setHeader('Transfer-Encoding', 'chunked');
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.write('[')
-    let i = 0;
-    for(let i = 0; i < 100; i++){
-        if(i % 4 == 0){
-            res.write(JSON.stringify({test:i}) + ',');
-        }
-        else{
-            res.write("");
-        }
+ io.on('connection', async (socket) => {
+    console.log('a user connected');
+    
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+    socket.on('chat message', (msg) => {
         
+        
+    });
+    while(true){
         await new Promise((res) => {setTimeout(res, 1000)});
+        socket.emit('game_event', 'That was funny');
     }
-    res.write(']')
-    res.end();
-});
+    
+ })
 
 app.post('/users', async (req, res) =>{
     const passhash = await argon2.hash(req.body.password);
@@ -187,4 +192,4 @@ app.get('/*', (req, res) => {
 
 
 // Start Server.
-app.listen(3000, () => console.log('Server Started...'));
+server.listen(3000, () => console.log('Server Started...'));

@@ -1,4 +1,5 @@
 const hostname = "http://127.0.0.1:3000"
+
 const fileToBase64 = async (file) => new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
@@ -15,9 +16,18 @@ const setHidden = (element, isHidden=true) => {
     }
 }
 
+const parse_form = (form_name) => {
+    let form = document.forms[form_name];
+    let data = {}
+    for(let x of form){
+        data[x.name] = x.value;
+    }
+    return data;
+}
+
 const update = (data) => {
     if(data === undefined){
-        img_avatar.src = "";
+        image_avatar.src = "";
         setHidden(og_home);
         setHidden(og_login, false);
         return;
@@ -25,7 +35,7 @@ const update = (data) => {
     else{
         var timestamp = new Date().getTime();
         if(data.avatar_url !== undefined){
-            img_avatar.src = `${hostname}/${data.avatar_url}?t=${timestamp}`;
+            image_avatar.src = `${hostname}/${data.avatar_url}?t=${timestamp}`;
         }
         if(data.username !== undefined){
             h_username.innerHTML = data.username;
@@ -65,12 +75,7 @@ const upload_image = () => {
 }
 
 const sign_up = () => {
-    sign_up_data = {
-        email:input_email_register.value,
-        username:input_username_register.value,
-        password:input_password_register.value,
-        fullname:input_fullname_register.value,
-    }
+    sign_up_data = parse_form('signup');
     options = {
         method:'post',
         mode:'cors',
@@ -83,15 +88,7 @@ const sign_up = () => {
 }
 
 const log_in = () => {
-    let username = input_username_login.value;
-    let password = input_password_login.value;
-    if(username === '' || password === ''){
-        return;
-    }
-    log_in_data = {
-        username: username, 
-        password: password
-    }
+    log_in_data = parse_form('login');
     options = {
         method:'post',
         mode:'cors',
