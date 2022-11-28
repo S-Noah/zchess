@@ -11,6 +11,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="http://127.0.0.1:3000/index.js"></script>
     <script>
+        const friends = [];
         document.addEventListener("DOMContentLoaded", () => {
             image_avatar.addEventListener('click', (evt) => {
                 document.getElementById('image_chooser').click();
@@ -20,13 +21,6 @@
             if(bearer !== null){
                 me()
             }
-            // socket.onAny((event, ...args) => {
-            //     console.log(event, args);
-            // });
-            // function test(){
-            //     var socket = io()
-            //     socket.emit('chat message', "LOL");
-            // }
         });
         
     </script>
@@ -55,7 +49,15 @@
         <div id="og_play" class="og-form2 center">
             <form name="play">
                 <h3>Opponent</h3>
-                <input name="opponent" type="text"/>
+                <div>
+                    <input name="opponent" type="text"/>
+                    <datalist>
+                        <option>Testing123</option>
+                        <option>Testing223</option>
+                        <option>Testing323</option>
+                    </datalist>
+                </div>
+                
                 <h3>Time Limit</h3>
                 <input name="time_limit" type="text"/>
                 <h3>Color</h3>
