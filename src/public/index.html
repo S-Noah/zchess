@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
     <script src="/socket.io/socket.io.js"></script>
     <script src="http://127.0.0.1:3000/index.js"></script>
+    <script src="http://127.0.0.1:3000/chess.js"></script>
     <script>
         const friends = [];
         document.addEventListener("DOMContentLoaded", () => {
@@ -17,10 +18,12 @@
                 document.getElementById('image_chooser').click();
             });
             image_chooser.addEventListener('change', upload_image);
+            chessboard.addEventListener('click', chess_click);
             var bearer = localStorage.getItem('bearer');
             if(bearer !== null){
                 me()
             }
+            draw_board();
         });
         
     </script>
@@ -45,8 +48,12 @@
         <input id="image_chooser" type="file" accept="image/*" class="hidden"/>
         <h3 id="h_username"></h3>
         <button onclick="log_out()">Logout</button>
+        <button onclick="flip()">Flip</button>
+        <div>
+            <canvas id="chessboard" width="600" height="600" class="chessboard"></canvas>
+        </div>
     
-        <div id="og_play" class="og-form2 center">
+        <!-- <div id="og_play" class="og-form2 center">
             <form name="play">
                 <h3>Opponent</h3>
                 <div>
@@ -67,7 +74,7 @@
                     <button>Black</button>
                 </div>
             </form>
-        </div>
+        </div> -->
     </div>
     <div id="og_login" class="og-form center">
         <h1>Zchess</h1>

@@ -95,11 +95,12 @@ app.post('/users', async (req, res) =>{
 app.post('/login', async (req, res) => {
     db.execute('SELECT (bin_to_uuid(id)), passhash FROM users WHERE username = ?', [req.body.username], 
     (err, results, fields) => {
+        console.log(results.length)
         if(err) {
             console.error(err);
             res.sendStatus(400); 
         }
-        else{
+        else if(results.length){
             argon2.verify(results[0].passhash, req.body.password)
             .then((verified) => {
                 if(verified){

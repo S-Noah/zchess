@@ -31,7 +31,11 @@ button:hover{
     color: #FFFFFF;
     background-color: var(--og-light-grey);
 }
-
+.chessboard{
+    padding: 0;
+    margin: 0 auto;
+    display: block;
+}
 .avatar{
     width: 10em;
     border-radius: 20%;
