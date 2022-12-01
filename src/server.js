@@ -15,6 +15,10 @@ const middleware = require('./middleware');
 
 const db = require('./db/dbc');
 
+const chess_engine = require('js-chess-engine');
+
+const active_games = {};
+
 // Startup Prechecks
 fs.mkdir(`${__dirname}/public/avatars`, (err) => {
     if (err) {
@@ -35,20 +39,24 @@ app.use(cors({origin: '*', allowedHeaders:['Content-Type, Authorization']}))
  * Socket Testing
  */
 io.on('connection', async (socket) => {
-    console.log('a user connected');
-    
+    jwt.verify(socket.handshake.auth.token, process.env.TOKEN_SECRET, (err, decoded) => {
+        if(err) {
+            console.log(err);
+        }
+        else{
+            
+        }
+    });
+
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
-    socket.on('chat message', (msg) => {
-        
+    socket.on('white_move', (msg) => {
         
     });
-    while(true){
-        await new Promise((res) => {setTimeout(res, 1000)});
-        socket.emit('game_event', 'That was funny');
-    }
-    
+    socket.on('black_move', (msg) => {
+        
+    });
 });
 // Endpoints
 /** 
@@ -74,17 +82,32 @@ app.post('/users', async (req, res) =>{
  * Parmeters: [email, username, password], (fullname)
  * Response: None
  */
- app.post('/games', middleware.hasAuth, async (req, res) =>{
-    const passhash = await argon2.hash(req.body.password);
-    db.execute('INSERT INTO users(email, passhash, username, fullname) VALUES(?, ?, ?, ?)', [req.body.email, passhash,  req.body.username, req.body.fullname], 
-        (err, results, fields) => {
-            if(err) {
-                console.error(err);
-                res.sendStatus(400); 
+app.post('/games', middleware.hasAuth, async (req, res) =>{
+    db.execute('SELECT id FROM users WHERE username = ?', [req.body.opponent], 
+    (err, user_results, fields) => {
+        console.log(user_results);
+        if(err) {
+            console.error(err);
+            res.sendStatus(400); 
+        }
+        else if(user_results.length){
+            let data = [];
+            if(req.body.color === 'White'){
+                data.push(req.jwt.id);
+                data.push(user_results[0].id);
             }
-            else{
-                res.sendStatus(201);
+            else if(req.body.color === 'Black'){
+
             }
+        //     db.execute('INSERT INTO GAMES(white_id, black_id, time_limit', [req.jwt.id, user_results[0].id, req.body.time_limit],
+        //     (err, results, fields) => {
+        //         if(err){
+        //             console.error(err);
+        //             res.sendStatus(400);
+        //         }
+        //         res.json({success:true});
+        //     });
+        }
     });
 });
 /** 
@@ -95,7 +118,6 @@ app.post('/users', async (req, res) =>{
 app.post('/login', async (req, res) => {
     db.execute('SELECT (bin_to_uuid(id)), passhash FROM users WHERE username = ?', [req.body.username], 
     (err, results, fields) => {
-        console.log(results.length)
         if(err) {
             console.error(err);
             res.sendStatus(400); 
@@ -160,6 +182,20 @@ app.post('/avatars', middleware.hasAuth, async (req, res) => {
     })
 });
 /** 
+ * Get the authenticated user.
+ * Requires Authorization Bearer Token.
+ * Request: None
+ * Response: [id, username, fullname, avatar_url, created_at]
+ */
+ app.get('/friends', middleware.hasAuth, (req, res) => {
+    db.execute('SELECT (bin_to_uuid(friend_id)) FROM friends WHERE (bin_to_uuid(owner_id)) = ?', [req.jwt.id], (err, results, fields) => {
+        if(err) console.log(err);
+        else{
+            res.json(results);
+        }
+    })
+});
+/** 
  * Get uploaded content.
  * @url the request url.
  * Request: None
@@ -181,4 +217,12 @@ app.get('/*', (req, res) => {
 });
 
 // Start Server.
-server.listen(3000, () => console.log('Server Started...'));
+server.listen(3000, () => {
+    console.log('Server Started...')
+    // const game = new jsChessEngine.Game();
+    // game.printToConsole();
+    // console.log(game.exportJson());
+    // console.log(game.exportFEN());
+    // console.log(game.moves())
+
+});

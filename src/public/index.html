@@ -20,12 +20,12 @@
             image_chooser.addEventListener('change', upload_image);
             chessboard.addEventListener('click', chess_click);
             var bearer = localStorage.getItem('bearer');
+            console.log(bearer)
             if(bearer !== null){
                 me()
             }
             draw_board();
         });
-        
     </script>
 </head>
 <body>
@@ -49,32 +49,34 @@
         <h3 id="h_username"></h3>
         <button onclick="log_out()">Logout</button>
         <button onclick="flip()">Flip</button>
-        <div>
+        <button onclick="get_friends()">friends</button>
+        <div class="hidden">
             <canvas id="chessboard" width="600" height="600" class="chessboard"></canvas>
         </div>
-    
-        <!-- <div id="og_play" class="og-form2 center">
+        <div id="og_play" class="og-form2 center">
             <form name="play">
-                <h3>Opponent</h3>
+                <h2>Play Game</h2>
+                <input name="opponent" placeholder="Opponenet" type="text"/>
                 <div>
-                    <input name="opponent" type="text"/>
-                    <datalist>
-                        <option>Testing123</option>
-                        <option>Testing223</option>
-                        <option>Testing323</option>
-                    </datalist>
+                    <select name="time_limit">
+                        <option disabled="disabled" selected="selected">Time Limit</option>
+                        <option>3</option>
+                        <option>5</option>
+                        <option>10</option>
+                        <option>30</option>
+                    </select>
                 </div>
-                
-                <h3>Time Limit</h3>
-                <input name="time_limit" type="text"/>
-                <h3>Color</h3>
                 <div>
-                    <button>White</button>
-                    <button>Random</button>
-                    <button>Black</button>
+                    <select name="color">
+                        <option disabled="disabled" selected="selected">Side</option>
+                        <option>White</option>
+                        <option>Random</option>
+                        <option>Black</option>
+                    </select>
                 </div>
             </form>
-        </div> -->
+            <button onclick="play_game()">Play</button>
+        </div>
     </div>
     <div id="og_login" class="og-form center">
         <h1>Zchess</h1>

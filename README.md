@@ -10,7 +10,7 @@ It allows users to create an account and upload a picture. It also allows them t
 ### Directory
 
   - src
-      - index.js - Backend Index.
+      - server.js - Backend Server.
       - middleware.js - Handles Auth.
       - create_tables.sql
       - package.json
@@ -18,11 +18,25 @@ It allows users to create an account and upload a picture. It also allows them t
     - public
       - avatars - All User Avatar Uploads
         - zero.gif
+      - pieces - All Chess Piece Images.
+        - br.svg
+        - bn.svg
+        - bb.svg
+        - bk.svg
+        - bq.svg
+        - bp.svg
+        - wr.svg
+        - wn.svg
+        - ww.svg
+        - wk.svg
+        - wq.svg
+        - wp.svg
       - styles
         - main.css
       - favicon.ico
       - index.html - Frontend Index.
       - index.js
+      - chess.js
 
 ### Live Hosts
 

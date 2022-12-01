@@ -13,7 +13,7 @@
 html{
     background-color: var(--og-grey);
 }
-h1, h3 {
+h1, h2,  h3 {
     color: #FFFFFF;
     
 }
@@ -46,7 +46,7 @@ button:hover{
     display: grid;
   
 }
-.og-form input{
+.og-form input, select{
     width: 15em;
     margin-bottom: 0.5em;
     padding: 0.25em;
@@ -63,8 +63,10 @@ button:hover{
     font-size: medium;
     background-color: var(--og-dark-grey);
     color: #FFFFFF;
+    margin: 0.25em;
 
 }
+
 .center{
     margin: auto;
     position: absolute;
@@ -74,4 +76,11 @@ button:hover{
 }
 .hidden {
     display: none;
+}
+.logged-in {
+    color: green;
+}
+  
+.logged-out {
+    color: red;
 }

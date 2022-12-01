@@ -107,21 +107,6 @@ const log_in = () => {
     })
 }
 
-const stream = async () => {
-    fetch(hostname +'/stream')
-    .then(res => {
-        let reader = res.body.getReader();
-        let done, value;
-        while (!done) {
-            ({ value, done } = reader.read());
-            if (done) {
-            return chunks;
-            }
-            console.log(value);
-        }
-    })
-}
-
 const me = async () => {
     var bearer = localStorage.getItem('bearer');
     if(bearer !== null){
@@ -139,6 +124,23 @@ const me = async () => {
         });
     }
 }
+const get_friends = () => {
+    var bearer = localStorage.getItem('bearer');
+    if(bearer !== null){
+        options = {
+        method:'get',
+        mode:'cors',
+        headers:{
+            'Authorization':`Bearer ${bearer}`
+        },
+        }
+        fetch(hostname + '/friends', options)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+        });
+    }
+}
 const log_out = () => {
     localStorage.clear();
     setHidden(og_home);
@@ -149,4 +151,32 @@ const log_out = () => {
 const register = () => {
     setHidden(og_login);
     setHidden(og_signup, false);
+}
+
+const play_game = () => {
+    game_data = parse_form('play');
+    var bearer = localStorage.getItem('bearer');
+    if(bearer !== null){
+        options = {
+            method:'post',
+            mode:'cors',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization':`Bearer ${bearer}`
+            },
+            body: JSON.stringify(game_data)
+        }
+        fetch(hostname + '/games', options)
+        .then(response => response.json())
+        .then((data) => {
+            console.log(data);
+        })
+    }
+}
+
+const game_socket = () => {
+    const socket = new io({
+        auth:{token:localStorage.getItem('bearer')}
+    });
+    
 }
