@@ -83,9 +83,9 @@ app.post('/users', async (req, res) =>{
  * Response: None
  */
 app.post('/games', middleware.hasAuth, async (req, res) =>{
-    db.execute('SELECT id FROM users WHERE username = ?', [req.body.opponent], 
+    console.log(req.body);
+    db.execute('SELECT (bin_to_uuid(id)) FROM users WHERE username = ?', [req.body.opponent], 
     (err, user_results, fields) => {
-        console.log(user_results);
         if(err) {
             console.error(err);
             res.sendStatus(400); 
@@ -94,19 +94,25 @@ app.post('/games', middleware.hasAuth, async (req, res) =>{
             let data = [];
             if(req.body.color === 'White'){
                 data.push(req.jwt.id);
-                data.push(user_results[0].id);
+                data.push(user_results[0]['(bin_to_uuid(id))']);
             }
             else if(req.body.color === 'Black'){
-
+                data.push(user_results[0]['(bin_to_uuid(id))']);
+                data.push(req.jwt.id);
             }
-        //     db.execute('INSERT INTO GAMES(white_id, black_id, time_limit', [req.jwt.id, user_results[0].id, req.body.time_limit],
-        //     (err, results, fields) => {
-        //         if(err){
-        //             console.error(err);
-        //             res.sendStatus(400);
-        //         }
-        //         res.json({success:true});
-        //     });
+            data.push(req.body.time_limit);
+            console.log(data);
+            db.execute('INSERT INTO GAMES(white_id, black_id, time_limit) VALUES((uuid_to_bin(?)), (uuid_to_bin(?)), ?)', data,
+            (err, results, fields) => {
+                if(err){
+                    console.error(err);
+                    res.sendStatus(400);
+                }
+                else{
+                    console.log(results);
+                    res.json({success:true});
+                }
+            });
         }
     });
 });
