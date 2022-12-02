@@ -1,4 +1,4 @@
-const hostname = "http://127.0.0.1:3000"
+const hostname = "http://127.0.0.1:3000";
 
 const fileToBase64 = async (file) => new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -46,6 +46,7 @@ const update = (data) => {
     
 }
 
+
 const upload_image = () => {
     var bearer = localStorage.getItem('bearer');
     if(bearer !== null){
@@ -85,6 +86,8 @@ const sign_up = () => {
         body:JSON.stringify(sign_up_data)
     }
     fetch(hostname + '/users', options)
+    setHidden(og_login,false);
+    setHidden(og_signup);
 }
 
 const log_in = () => {
@@ -169,14 +172,23 @@ const play_game = () => {
         fetch(hostname + '/games', options)
         .then(response => response.json())
         .then((data) => {
-            console.log(data);
+            setHidden(og_play);
+            draw_board();
+            setHidden(og_chessboard, false);
+            game_socket(data.game_id)
+            game_id = data.game_id;
         })
     }
 }
 
-const game_socket = () => {
-    const socket = new io({
-        auth:{token:localStorage.getItem('bearer')}
+const game_socket = (id) => {
+    socket = new io({
+        auth:{token:localStorage.getItem('bearer')},
+        query:{game_id:id}
     });
-    
+    socket.on('game_event', (msg) => {
+        console.log(msg);
+        update_from_fen(msg.fen);
+    });
+    //socket.emit('white_move', {success:true});
 }

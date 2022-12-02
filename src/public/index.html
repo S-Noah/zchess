@@ -13,6 +13,22 @@
     <script src="http://127.0.0.1:3000/chess.js"></script>
     <script>
         const friends = [];
+        const piece_images = {};
+        var socket = null;
+        var game_id;
+        const load_images = () => {
+            for(let c of ['r', 'n', 'b', 'k', 'q', 'p']){
+                let white = new Image();
+                let black = new Image();
+                let w_code = `w${c}`;
+                let b_code = `b${c}`;
+                white.src = `http://127.0.0.1:3000/pieces/${w_code}.svg`;
+                black.src = `http://127.0.0.1:3000/pieces/${b_code}.svg`
+                piece_images[w_code] = white;
+                piece_images[b_code] = black;
+            }
+        }
+        load_images();
         document.addEventListener("DOMContentLoaded", () => {
             image_avatar.addEventListener('click', (evt) => {
                 document.getElementById('image_chooser').click();
@@ -50,7 +66,7 @@
         <button onclick="log_out()">Logout</button>
         <button onclick="flip()">Flip</button>
         <button onclick="get_friends()">friends</button>
-        <div class="hidden">
+        <div id=og_chessboard class="hidden">
             <canvas id="chessboard" width="600" height="600" class="chessboard"></canvas>
         </div>
         <div id="og_play" class="og-form2 center">

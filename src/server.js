@@ -44,17 +44,20 @@ io.on('connection', async (socket) => {
             console.log(err);
         }
         else{
-            
+            socket.join(socket.handshake.query.game_id);
         }
     });
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
-    socket.on('white_move', (msg) => {
-        
-    });
-    socket.on('black_move', (msg) => {
+    socket.on('move', (msg) => {
+        console.log(msg);
+        let game = active_games[msg.game_id];
+        game.move(msg.start, msg.stop)
+        game.printToConsole();
+        socket.emit('game_event', {fen:game.exportFEN()});
+        io.in(msg.game_id).emit('game_event', {fen:game.exportFEN()});
         
     });
 });
@@ -83,8 +86,7 @@ app.post('/users', async (req, res) =>{
  * Response: None
  */
 app.post('/games', middleware.hasAuth, async (req, res) =>{
-    console.log(req.body);
-    db.execute('SELECT (bin_to_uuid(id)) FROM users WHERE username = ?', [req.body.opponent], 
+    db.execute('SELECT id FROM users WHERE username = ?', [req.body.opponent], 
     (err, user_results, fields) => {
         if(err) {
             console.error(err);
@@ -92,25 +94,27 @@ app.post('/games', middleware.hasAuth, async (req, res) =>{
         }
         else if(user_results.length){
             let data = [];
+            if(req.body.color === "Random"){
+               req.body.color =  (Math.random() < 0.5)? 'White':'Black';
+            }
             if(req.body.color === 'White'){
                 data.push(req.jwt.id);
-                data.push(user_results[0]['(bin_to_uuid(id))']);
+                data.push(user_results[0].id);
             }
             else if(req.body.color === 'Black'){
-                data.push(user_results[0]['(bin_to_uuid(id))']);
+                data.push(user_results[0].id);
                 data.push(req.jwt.id);
             }
             data.push(req.body.time_limit);
-            console.log(data);
-            db.execute('INSERT INTO GAMES(white_id, black_id, time_limit) VALUES((uuid_to_bin(?)), (uuid_to_bin(?)), ?)', data,
+            db.execute('INSERT INTO GAMES(white_id, black_id, time_limit) VALUES(?, ?, ?)', data,
             (err, results, fields) => {
                 if(err){
                     console.error(err);
                     res.sendStatus(400);
                 }
                 else{
-                    console.log(results);
-                    res.json({success:true});
+                    active_games[results.insertId] = new chess_engine.Game();
+                    res.json({game_id:results.insertId});
                 }
             });
         }
@@ -122,7 +126,7 @@ app.post('/games', middleware.hasAuth, async (req, res) =>{
  * Response: [Token]
  */
 app.post('/login', async (req, res) => {
-    db.execute('SELECT (bin_to_uuid(id)), passhash FROM users WHERE username = ?', [req.body.username], 
+    db.execute('SELECT id, passhash FROM users WHERE username = ?', [req.body.username], 
     (err, results, fields) => {
         if(err) {
             console.error(err);
@@ -132,7 +136,7 @@ app.post('/login', async (req, res) => {
             argon2.verify(results[0].passhash, req.body.password)
             .then((verified) => {
                 if(verified){
-                    var token = jwt.sign({id:results[0]['(bin_to_uuid(id))'], username:req.body.username}, process.env.TOKEN_SECRET, {expiresIn:1000});
+                    var token = jwt.sign({id:results[0].id, username:req.body.username}, process.env.TOKEN_SECRET, {expiresIn:1000});
                     res.json({token:token});
                 }
                 else{
@@ -150,7 +154,7 @@ app.post('/login', async (req, res) => {
 app.post('/avatars', middleware.hasAuth, async (req, res) => {
     var buff = Buffer.from(req.body.data, 'base64');
     var path = `avatars/${req.jwt.username}.${req.body.type}`;
-    db.execute('SELECT avatar_url FROM users WHERE bin_to_uuid(id) = ?', [req.jwt.id], 
+    db.execute('SELECT avatar_url FROM users WHERE id = ?', [req.jwt.id], 
     (err, results, fields) => {
         if(err) console.log(err);
         else{
@@ -161,7 +165,7 @@ app.post('/avatars', middleware.hasAuth, async (req, res) => {
                     if(err) console.log(err);
                 });
             }
-            db.execute('UPDATE users SET avatar_url = ? WHERE bin_to_uuid(id) = ?', [path, req.jwt.id], (err, results, fields) => {
+            db.execute('UPDATE users SET avatar_url = ? WHERE id = ?', [path, req.jwt.id], (err, results, fields) => {
                 if(err) console.log(err);
             });
             fs.writeFile(`public/${path}`, buff, (err) =>{
@@ -178,11 +182,9 @@ app.post('/avatars', middleware.hasAuth, async (req, res) => {
  * Response: [id, username, fullname, avatar_url, created_at]
  */
  app.get('/me', middleware.hasAuth, (req, res) => {
-    db.execute('SELECT (bin_to_uuid(id)), username, fullname, avatar_url, created_at FROM users WHERE (bin_to_uuid(id)) = ?', [req.jwt.id], (err, results, fields) => {
+    db.execute('SELECT id, username, fullname, avatar_url, created_at FROM users WHERE id = ?', [req.jwt.id], (err, results, fields) => {
         if(err) console.log(err);
         else{
-            results[0]['id'] = results[0]['(bin_to_uuid(id))'];
-            delete results[0]['(bin_to_uuid(id))'];
             res.json(results[0]);
         }
     })
@@ -194,7 +196,7 @@ app.post('/avatars', middleware.hasAuth, async (req, res) => {
  * Response: [id, username, fullname, avatar_url, created_at]
  */
  app.get('/friends', middleware.hasAuth, (req, res) => {
-    db.execute('SELECT (bin_to_uuid(friend_id)) FROM friends WHERE (bin_to_uuid(owner_id)) = ?', [req.jwt.id], (err, results, fields) => {
+    db.execute('SELECT friend_id FROM friends WHERE owner_id = ?', [req.jwt.id], (err, results, fields) => {
         if(err) console.log(err);
         else{
             res.json(results);

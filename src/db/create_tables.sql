@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
-    id BINARY(16) PRIMARY KEY DEFAULT (uuid_to_bin(uuid())),
+    id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(320) UNIQUE NOT NULL,
     passhash VARCHAR(255),
@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS games (
-    id BINARY(16) PRIMARY KEY DEFAULT (uuid_to_bin(uuid())),
-    white_id BINARY(16) NOT NULL,
-    black_id BINARY(16) NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    white_id INT,
+    black_id INT,
     time_limit INT,
     white_time INT,
     black_time INT,
@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS games (
     fen VARCHAR(120),
     pgn TEXT(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX `ga_white_id_idx` (`white_id`),
-    INDEX `ga_black_id_idx` (`black_id`),
+    INDEX `white_id_idx` (`white_id`),
+    INDEX `black_id_idx` (`black_id`),
     CONSTRAINT `fk_white_id`
         FOREIGN KEY (`white_id`)
         REFERENCES `users` (`id`)
@@ -35,11 +35,11 @@ CREATE TABLE IF NOT EXISTS games (
 );
 
 CREATE TABLE IF NOT EXISTS friends (
-    owner_id BINARY(16) NOT NULL,
-    friend_id BINARY(16) NOT NULL,
+    owner_id INT,
+    friend_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX `fr_owner_id_idx` (`owner_id`),
-    INDEX `fr_friend_id_idx` (`friend_id`),
+    INDEX `owner_id_idx` (`owner_id`),
+    INDEX `friend_id_idx` (`friend_id`),
     CONSTRAINT `fk_owner_id`
         FOREIGN KEY (`owner_id`)
         REFERENCES `users` (`id`)
@@ -53,18 +53,18 @@ CREATE TABLE IF NOT EXISTS friends (
 );
 
 CREATE TABLE IF NOT EXISTS messages (
-    owner_id BINARY(16),
-    game_id BINARY(16),
+    owner_id INT,
+    game_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     content TEXT(100),
-    INDEX `me_owner_id_idx` (`owner_id`),
-    INDEX `me_game_id_idx` (`game_id`),
-    CONSTRAINT `me_fk_owner_id`
+    INDEX `message_owner_id_idx` (`owner_id`),
+    INDEX `message_game_id_idx` (`game_id`),
+    CONSTRAINT `fk_message_owner_id`
         FOREIGN KEY (`owner_id`)
         REFERENCES `users` (`id`)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
-    CONSTRAINT `me_fk_game_id`
+    CONSTRAINT `fk_message_game_id`
         FOREIGN KEY (`game_id`)
         REFERENCES `games` (`id`)
         ON DELETE NO ACTION
