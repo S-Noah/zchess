@@ -58,7 +58,7 @@ io.on('connection', async (socket) => {
             game.move(msg.start, msg.stop);
             io.of("/").to(`game_${msg.game_id}`).emit('game_event', {fen:game.exportFEN()});
         }
-        catch{
+        catch(err){
             console.log('ILLEGAL_MOVE')
         }
     });
