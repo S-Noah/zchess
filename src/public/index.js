@@ -178,6 +178,7 @@ const play_game = () => {
             draw_board();
             game_id = data.game_id;
             game_socket(data.game_id)
+            game_id_header.innerHTML=`Game ID: ${game_id}`;
         })
     }
 }
