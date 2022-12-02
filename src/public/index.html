@@ -65,7 +65,9 @@
         <h3 id="h_username"></h3>
         <button onclick="log_out()">Logout</button>
         <button onclick="flip()">Flip</button>
-        <button onclick="get_friends()">friends</button>
+        <button onclick="show_join()">Join</button>
+        <button onclick="show_play()">play</button>
+
         <div id=og_chessboard class="hidden">
             <canvas id="chessboard" width="600" height="600" class="chessboard"></canvas>
         </div>
@@ -92,6 +94,14 @@
                 </div>
             </form>
             <button onclick="play_game()">Play</button>
+        </div>
+        <div id="og_join" class="og-form2 center hidden">
+            <h2>Join Game</h2>
+            <form name="join">
+                <h3>Game ID</h3>
+                <input name="game_id" type="text"/>
+            </form>
+            <button onclick="join_game()">Join</button>
         </div>
     </div>
     <div id="og_login" class="og-form center">

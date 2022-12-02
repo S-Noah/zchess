@@ -73,7 +73,7 @@ const chess_click = (evt) => {
         selected_square = null;
     }
     else if(selected_square !== null){
-        console.log(`${selected_square.uci}${new_square.uci}`);
+        //console.log(`${selected_square.uci}${new_square.uci}`);
         move(selected_square.uci, new_square.uci);
         selected_square = null;
     }
@@ -86,8 +86,13 @@ const get_clicked_square = (evt) => {
     var y = ((evt.clientY - rect.top) / square_dim) >> 0
     let col = (flipped)? String.fromCharCode(65 + (7-x)):String.fromCharCode(65 + x)
     let row = (flipped)? y+1:8-y;
+    if(flipped){
+        x = 7 - x;
+        y = 7 - y;
+    }
     return {uci:`${col}${row}`,x:x, y:y};
 }
+
 const move = (start, stop) => {
     socket.emit('move', {game_id:game_id, start:start, stop:stop})
 }

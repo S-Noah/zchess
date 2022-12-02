@@ -172,6 +172,7 @@ const play_game = () => {
         fetch(hostname + '/games', options)
         .then(response => response.json())
         .then((data) => {
+            console.log(data.game_id);
             setHidden(og_play);
             draw_board();
             setHidden(og_chessboard, false);
@@ -191,4 +192,21 @@ const game_socket = (id) => {
         update_from_fen(msg.fen);
     });
     //socket.emit('white_move', {success:true});
+}
+
+const join_game = () => {
+    data = parse_form('join');
+    game_socket(data.game_id);
+    game_id = data.game_id;
+    setHidden(og_chessboard, false);
+    setHidden(og_play);
+    setHidden(og_join);
+}
+const show_join = () => {
+    setHidden(og_play);
+    setHidden(og_join, false);
+}
+const show_play = () => {
+    setHidden(og_play, false);
+    setHidden(og_join);
 }

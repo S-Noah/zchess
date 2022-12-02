@@ -44,7 +44,8 @@ io.on('connection', async (socket) => {
             console.log(err);
         }
         else{
-            socket.join(socket.handshake.query.game_id);
+            console.log("JOINING", `game_${socket.handshake.query.game_id}`);
+            socket.join(`game_${socket.handshake.query.game_id}`);
         }
     });
 
@@ -52,13 +53,14 @@ io.on('connection', async (socket) => {
         console.log('user disconnected');
     });
     socket.on('move', (msg) => {
-        console.log(msg);
         let game = active_games[msg.game_id];
-        game.move(msg.start, msg.stop)
-        game.printToConsole();
-        socket.emit('game_event', {fen:game.exportFEN()});
-        io.in(msg.game_id).emit('game_event', {fen:game.exportFEN()});
-        
+        try{
+            game.move(msg.start, msg.stop);
+            io.of("/").to(`game_${msg.game_id}`).emit('game_event', {fen:game.exportFEN()});
+        }
+        catch{
+            console.log('ILLEGAL_MOVE')
+        }
     });
 });
 // Endpoints
@@ -227,10 +229,4 @@ app.get('/*', (req, res) => {
 // Start Server.
 server.listen(3000, () => {
     console.log('Server Started...')
-    // const game = new jsChessEngine.Game();
-    // game.printToConsole();
-    // console.log(game.exportJson());
-    // console.log(game.exportFEN());
-    // console.log(game.moves())
-
 });
