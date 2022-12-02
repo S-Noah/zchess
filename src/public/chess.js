@@ -2,6 +2,9 @@ var length = 600;
 var square_dim = length / 8;
 var flipped = false;
 var selected_square = null;
+var possible_moves = null;
+var player_color = null;
+
 const starting_board = [  
     ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
     ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
@@ -69,12 +72,15 @@ const chess_click = (evt) => {
     if(selected_square === null){
         selected_square = new_square;
     }
-    else if(new_square === selected_square){
+    else if(new_square.uci === selected_square.uci){
         selected_square = null;
     }
     else if(selected_square !== null){
-        //console.log(`${selected_square.uci}${new_square.uci}`);
-        move(selected_square.uci, new_square.uci);
+        console.log(`${selected_square.uci}${new_square.uci}`);
+        let piece = board[selected_square.y][selected_square.x];
+        if(player_color === 'White' && piece === piece.toUpperCase() || player_color === 'Black' && piece === piece.toLowerCase()){
+            move(selected_square.uci, new_square.uci);
+        }
         selected_square = null;
     }
     draw_board();
@@ -96,6 +102,7 @@ const get_clicked_square = (evt) => {
 const move = (start, stop) => {
     socket.emit('move', {game_id:game_id, start:start, stop:stop})
 }
+
 const update_from_fen = (fen) => {
     board = blank_board.map((x) => {return {...x}});
     let pos_fen = fen.split(' ', 1)[0];
@@ -115,4 +122,19 @@ const update_from_fen = (fen) => {
         }
     }
     draw_board();
+}
+
+const update_board = (data) => {
+    console.log(data);
+    possible_moves = data.possible_moves;
+    if(data.color !== undefined){
+        player_color = data.color;
+        if(player_color === 'Black'){
+            flipped = true;
+            draw_board();
+        }
+    }
+    if(data.fen !== undefined){
+        update_from_fen(data.fen);
+    }
 }

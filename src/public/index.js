@@ -174,10 +174,10 @@ const play_game = () => {
         .then((data) => {
             console.log(data.game_id);
             setHidden(og_play);
-            draw_board();
             setHidden(og_chessboard, false);
-            game_socket(data.game_id)
+            draw_board();
             game_id = data.game_id;
+            game_socket(data.game_id)
         })
     }
 }
@@ -187,11 +187,12 @@ const game_socket = (id) => {
         auth:{token:localStorage.getItem('bearer')},
         query:{game_id:id}
     });
-    socket.on('game_event', (msg) => {
-        console.log(msg);
-        update_from_fen(msg.fen);
+    socket.on('game_start', (msg) => {
+        update_board(msg);
     });
-    //socket.emit('white_move', {success:true});
+    socket.on('game_event', (msg) => {
+        update_board(msg);
+    });
 }
 
 const join_game = () => {
@@ -200,13 +201,4 @@ const join_game = () => {
     game_id = data.game_id;
     setHidden(og_chessboard, false);
     setHidden(og_play);
-    setHidden(og_join);
-}
-const show_join = () => {
-    setHidden(og_play);
-    setHidden(og_join, false);
-}
-const show_play = () => {
-    setHidden(og_play, false);
-    setHidden(og_join);
 }

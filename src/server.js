@@ -36,7 +36,9 @@ app.use(express.json({limit: '5mb'}))
 app.use(cors({origin: '*', allowedHeaders:['Content-Type, Authorization']}))
 
 /**
- * Socket Testing
+ * Game Sockets.
+ * When a player joins, it looks in the active games for the queried game. it matches the ids to the correct color.
+ * Each game gets a room, where game events are broad cast to.
  */
 io.on('connection', async (socket) => {
     jwt.verify(socket.handshake.auth.token, process.env.TOKEN_SECRET, (err, decoded) => {
@@ -44,8 +46,27 @@ io.on('connection', async (socket) => {
             console.log(err);
         }
         else{
-            console.log("JOINING", `game_${socket.handshake.query.game_id}`);
-            socket.join(`game_${socket.handshake.query.game_id}`);
+            let game_id = socket.handshake.query.game_id
+            console.log("JOINING", `game_${game_id}`);
+            socket.join(`game_${game_id}`);
+
+            let game = active_games[game_id];
+            db.execute('SELECT * FROM games WHERE id = ?', [game_id],
+            (err, results, fields) => {
+                if(err) {
+                    console.error(err); 
+                }
+                else{
+                    let color;
+                    if(results[0].white_id === decoded.id){
+                        color = 'White';
+                    }
+                    else if(results[0].black_id === decoded.id){
+                        color = 'Black';
+                    }
+                    socket.emit('game_start', {color:color});
+                }
+            });
         }
     });
 
@@ -56,7 +77,7 @@ io.on('connection', async (socket) => {
         let game = active_games[msg.game_id];
         try{
             game.move(msg.start, msg.stop);
-            io.of("/").to(`game_${msg.game_id}`).emit('game_event', {fen:game.exportFEN()});
+            io.of("/").to(`game_${msg.game_id}`).emit('game_event', {fen:game.exportFEN(), possible_moves:game.moves()});
         }
         catch(err){
             console.log('ILLEGAL_MOVE')
@@ -84,7 +105,7 @@ app.post('/users', async (req, res) =>{
 });
 /** 
  * Create Game.
- * Parmeters: [email, username, password], (fullname)
+ * Parmeters: [opponent, color], (time_limit)
  * Response: None
  */
 app.post('/games', middleware.hasAuth, async (req, res) =>{
@@ -108,7 +129,7 @@ app.post('/games', middleware.hasAuth, async (req, res) =>{
                 data.push(req.jwt.id);
             }
             data.push(req.body.time_limit);
-            db.execute('INSERT INTO GAMES(white_id, black_id, time_limit) VALUES(?, ?, ?)', data,
+            db.execute('INSERT INTO games(white_id, black_id, time_limit) VALUES(?, ?, ?)', data,
             (err, results, fields) => {
                 if(err){
                     console.error(err);

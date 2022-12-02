@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS games (
     time_limit INT,
     white_time INT,
     black_time INT,
-    is_active BOOLEAN DEFAULT 1,
     fen VARCHAR(120),
     pgn TEXT(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
