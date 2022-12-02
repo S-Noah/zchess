@@ -40,7 +40,7 @@ It allows users to create an account and upload a picture. It also allows them t
 
 ### Live Hosts
 
-<https://digdug.cs.endicott.edu/~nsarge>
+<https://digdug.cs.endicott.edu/~nsarge/project>
 
 <http://noahsarge.com>
 
@@ -62,8 +62,6 @@ It allows users to create an account and upload a picture. It also allows them t
   9. Create .env file with `DB_HOST, DB_USER, DB_PASS`, `DB_NAME`, and `TOKEN_SECRET`.
   10. Run `npm start`
 
-
-
 ### API
 
 | Url | Method | Requires Auth | Request | Response | Description |
@@ -72,12 +70,10 @@ It allows users to create an account and upload a picture. It also allows them t
 | /users | POST | false | `{username:"", password:"", email:"", fullname:""}` | None | Creates a new user |
 | /login | POST | false | `{username:"", password:""}` | `{token:""}` | Handles login and returns a token |
 | /me | GET | TRUE | None | `{"id":"", "username":"", "email":"", "fullname":"", "avatar_url":"", "created_at":"", "updated_at":""}` | Gets the authed user |s
-| /games | POST | true | `{owner_id:"", opponent_id:"", color:"", "random", time:"05:00"}` | `{game_id:""}` | Creates a new game and challenges the players |
+| /games | POST | true | `{opponent_id:"", color:"", time_limit:""}` | `{game_id:""}` | Creates a new game and challenges the players |
 | /messages | POST | true | `{game_id:"", content:""}` | None | Creates a chat message |
-| /games/:id/play | POST | true | `{move:"", resign:false, draw:false}` | None | Creates a chat message |
 | /avatars | POST | true | `{type:"", data:base64("")}` | `{avatar_url:""}` | Uploads a users avatar |
-| /stream | GET | true | None | `game or chat json stream` | Gets the current streams for the authed user |
-
+| /socket.io | GET | true | `{game_id:""}` | `web socket` | socket to stream game events |
 
 ## Backend
 ### Uses `Node.js` and `MySQL`. Allows the user to RESTfully CRUD data model:
@@ -96,7 +92,7 @@ It allows users to create an account and upload a picture. It also allows them t
   #### Models
 
   - **users**:
-    - id : `BINARY(16)` - uuid,
+    - id : `INT`,
     - username: `VARCHAR(255)`,
     - email: `VARCHAR(320)`,
     - passhash: `VARCHAR(255)`,
@@ -106,9 +102,9 @@ It allows users to create an account and upload a picture. It also allows them t
     - updated_at: `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`,
 
   - **games**:
-    - id : `BINARY(16)` - uuid,
-    - white_id : `BINARY(16) FOREIGN KEY REFERENCES users` - uuid, 
-    - black_id : `BINARY(16) FOREIGN KEY REFERENCES users` - uuid, 
+    - id : `INT`,
+    - white_id : `INT FOREIGN KEY REFERENCES users`, 
+    - black_id : `INT FOREIGN KEY REFERENCES users`, 
     - time_limit: `INT`,
     - white_time: `INT`,
     - black_time: `INT`,
@@ -118,13 +114,13 @@ It allows users to create an account and upload a picture. It also allows them t
     - updated_at: `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`,
     - moves: `TEXT(500)`,
   - **messages**:
-    - owner_id : `BINARY(16) FOREIGN KEY REFERENCES users` - uuid, 
-    - game_id : `BINARY(16) FOREIGN KEY REFERENCES users` - uuid, 
+    - owner_id : `INT FOREIGN KEY REFERENCES users`, 
+    - game_id : `INT FOREIGN KEY REFERENCES users`, 
     - created_at: `TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
     - content: `TEXT(500)`,
   - **friends**
-    - owner_id : `BINARY(16) FOREIGN KEY REFERENCES users` - uuid, 
-    - friend_id : `BINARY(16) FOREIGN KEY REFERENCES users` - uuid, 
+    - owner_id : `INT FOREIGN KEY REFERENCES users`, 
+    - friend_id : `INT FOREIGN KEY REFERENCES users`, 
     - created_at: `TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
    
 ## Frontend
@@ -137,7 +133,7 @@ It allows users to create an account and upload a picture. It also allows them t
 
 ```json
 {
-  "id":"b44ccd61-bd4f-40f1-a3c8-1f5bac95c94f",
+  "id":"1",
   "username":"zero",
   "email":"zero@noahsarge.com",
   "full name":"zero lamperouge",
@@ -150,13 +146,12 @@ It allows users to create an account and upload a picture. It also allows them t
 
 ```json
 {
-  "id":"eeb530dc-5a04-4d83-831f-8a404744b27d",
-  "white_id":"b44ccd61-bd4f-40f1-a3c8-1f5bac95c94f",
-  "black_id":"616fcf70-c92d-415d-bc8f-36ae9fff2179",
+  "id":"1",
+  "white_id":"2",
+  "black_id":"5",
   "time_limit":"5:00",
   "white_time":"5:00",
   "black_time":"5:00",
-  "is_active":true,
   "fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
   "moves":"c2c4 e7e5",
   "created_at":"2022-11-08T04:38:46+0000",
@@ -168,8 +163,8 @@ It allows users to create an account and upload a picture. It also allows them t
 
 ```json
 {
-  "owner_id":"b44ccd61-bd4f-40f1-a3c8-1f5bac95c94f",
-  "game_id":"eeb530dc-5a04-4d83-831f-8a404744b27d",
+  "owner_id":"1",
+  "game_id":"2",
   "content":"Great Move!",
   "created_at":"2022-11-08T04:38:46+0000"
 }
@@ -179,8 +174,8 @@ It allows users to create an account and upload a picture. It also allows them t
 
 ```json
 {
-  "owner_id":"b44ccd61-bd4f-40f1-a3c8-1f5bac95c94f",
-  "friend_id":"616fcf70-c92d-415d-bc8f-36ae9fff2179",
+  "owner_id":"2",
+  "friend_id":"5",
   "created_at":"2022-11-08T04:38:46+0000"
 }
 ```
@@ -199,23 +194,28 @@ It allows users to create an account and upload a picture. It also allows them t
 - [x] Create login page.
 - [x] Create register page.
 - [x] Change picture from frontend.
-- [ ] Set game time limit.
-- [ ] Create home page. 5%.
-- [ ] Create play_game page.
+- [x] Set game time limit.
+- [x] Create home page.
+- [x] Create play_game page.
 - [ ] Create friends window.
-- [ ] Create chessboard.
+- [x] Create chessboard.
 - [ ] Create chatlog.
 - [ ] Create movelog.
-- [ ] Add chess logic to javascript board controller.
-- [ ] Add chess logic to backend.
-- [ ] Stream a game as json events over time.
+- [x] Add chess logic to javascript board controller.
+- [x] Add chess logic to backend.
+- [x] Stream a game as json events over time.
 - [ ] Stream a chatlog as json events over time.
-- [ ] Create a game.
+- [x] Create a game.
 - [ ] Add a friend to the game.
-- [ ] Challenge another user to the game.
+- [x] Challenge another user to the game.
 - [ ] Challenge a friend to the game.
-- [ ] Play the game.
+- [x] Play the game.
 - [ ] Chat in the game.
 - [ ] Review old games.
+- [ ] Add more feedback on chess board.
+- [ ] Show possible moves for a piece.
+- [ ] Show when the game is over.
+- [ ] Allow a user to return to the play menu.
+- [ ] Implement time into chess games.
 
 
