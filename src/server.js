@@ -88,7 +88,6 @@ io.on('connection', async (socket) => {
             game.move(msg.start, msg.stop);
             let game_data = game.exportJson();
             let response_data = {fen:game.exportFEN(), possible_moves:game.moves(), check:game_data.check, check_mate:game_data.checkMate, is_over:game_data.isFinished, turn:game_data.turn};
-            console.log(response_data)
             io.of("/").to(`game_${msg.game_id}`).emit('game_event', response_data);
         }
         catch(err){
@@ -141,7 +140,6 @@ app.post('/games', middleware.hasAuth, async (req, res) =>{
             res.sendStatus(400); 
         }
         else if(user_results.length){
-            console.log(user_results.length)
             let data = [];
             if(req.body.color === "Random"){
                req.body.color =  (Math.random() < 0.5)? 'White':'Black';
