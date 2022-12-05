@@ -51,6 +51,9 @@ io.on('connection', async (socket) => {
             socket.join(`game_${game_id}`);
 
             let game = active_games[game_id];
+            if(game === undefined){
+                return;
+            }
             db.execute('SELECT * FROM games WHERE id = ?', [game_id],
             (err, results, fields) => {
                 if(err) {
@@ -64,7 +67,7 @@ io.on('connection', async (socket) => {
                     else if(results[0].black_id === decoded.id){
                         color = 'Black';
                     }
-                    socket.emit('game_start', {color:color});
+                    socket.emit('game_start', {color:color, fen:game.exportFEN(), possible_moves:game.moves()});
                 }
             });
         }
@@ -77,7 +80,8 @@ io.on('connection', async (socket) => {
         let game = active_games[msg.game_id];
         try{
             game.move(msg.start, msg.stop);
-            io.of("/").to(`game_${msg.game_id}`).emit('game_event', {fen:game.exportFEN(), possible_moves:game.moves()});
+            let game_data = game.exportJson();
+            io.of("/").to(`game_${msg.game_id}`).emit('game_event', {fen:game.exportFEN(), possible_moves:game.moves(), check:game_data.check, check_mate:game_data.checkMate, is_over:game_data.isFinished, turn:game_data.turn});
         }
         catch(err){
             console.log('ILLEGAL_MOVE')
@@ -105,7 +109,7 @@ app.post('/users', async (req, res) =>{
 });
 /** 
  * Create Game.
- * Parmeters: [opponent, color], (time_limit)
+ * Parmeters: [opponent, color], ()
  * Response: None
  */
 app.post('/games', middleware.hasAuth, async (req, res) =>{
@@ -116,6 +120,7 @@ app.post('/games', middleware.hasAuth, async (req, res) =>{
             res.sendStatus(400); 
         }
         else if(user_results.length){
+            console.log(user_results.length)
             let data = [];
             if(req.body.color === "Random"){
                req.body.color =  (Math.random() < 0.5)? 'White':'Black';
@@ -128,8 +133,8 @@ app.post('/games', middleware.hasAuth, async (req, res) =>{
                 data.push(user_results[0].id);
                 data.push(req.jwt.id);
             }
-            data.push(req.body.time_limit);
-            db.execute('INSERT INTO games(white_id, black_id, time_limit) VALUES(?, ?, ?)', data,
+
+            db.execute('INSERT INTO games(white_id, black_id) VALUES(?, ?)', data,
             (err, results, fields) => {
                 if(err){
                     console.error(err);
@@ -140,6 +145,9 @@ app.post('/games', middleware.hasAuth, async (req, res) =>{
                     res.json({game_id:results.insertId});
                 }
             });
+        }
+        else{
+            res.sendStatus(404);
         }
     });
 });

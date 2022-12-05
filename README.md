@@ -89,6 +89,8 @@ It allows users to create an account and upload a picture. It also allows them t
   - jsonwebtoken - Used to sign and verify Auth Tokens.
   - mysql2 - Database Wrapper.
   - fs - Javascript Async FileSystem.
+  - socket.io - Library for opening and managing websockets used in tandem with express.
+  - js-chess-engine
   #### Models
 
   - **users**:

@@ -64,25 +64,19 @@
         <input id="image_chooser" type="file" accept="image/*" class="hidden"/>
         <h3 id="h_username"></h3>
         <button onclick="log_out()">Logout</button>
-        <button onclick="flip()">Flip</button>
 
         <div id=og_chessboard class="center hidden">
-            <h1 id="game_id_header"></h1>
+            <h2 id="game_id_header"></h2>
             <canvas id="chessboard" width="600" height="600" class="chessboard"></canvas>
+            <div>
+                <img id="opponent_avatar" class="avatar"/>
+                <button onclick="flip()">Flip</button>
+            </div>
         </div>
         <div id="og_play" class="og-form2 center">
             <form name="play">
                 <h2>Play Game</h2>
                 <input name="opponent" placeholder="Opponenet" type="text"/>
-                <div>
-                    <select name="time_limit">
-                        <option disabled="disabled" selected="selected">Time Limit</option>
-                        <option>3</option>
-                        <option>5</option>
-                        <option>10</option>
-                        <option>30</option>
-                    </select>
-                </div>
                 <div>
                     <select name="color">
                         <option disabled="disabled" selected="selected">Side</option>

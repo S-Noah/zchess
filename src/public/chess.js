@@ -1,9 +1,16 @@
 var length = 600;
 var square_dim = length / 8;
+var half_square_dim = square_dim / 2
 var flipped = false;
 var selected_square = null;
 var possible_moves = null;
 var player_color = null;
+var in_check = false;
+var turn = null;
+
+var selected_possible_moves = [];
+
+const PI_2 = 2 * Math.PI;
 
 const starting_board = [  
     ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
@@ -50,10 +57,13 @@ const draw_board = () => {
             }
 
             ctx.fillStyle = (i % 2 === 0 ^ j % 2 === 0)? "#AAAFFF":"#FFFAAA";
+
             if(selected_square !== null && i === selected_square.y && j === selected_square.x){
-                ctx.fillStyle ="#00000080";
+                ctx.fillStyle = "#00000080";
             }
+
             ctx.fillRect(x, y, square_dim, square_dim);
+
             if(piece_code !== '_'){
                 let color_code = (piece_code === piece_code.toUpperCase())? 'w':'b';
                 piece_code = piece_code.toLowerCase();
@@ -63,6 +73,15 @@ const draw_board = () => {
                 }
                 ctx.drawImage(img, x, y, square_dim, square_dim);
             }
+
+            for(let possible of selected_possible_moves){
+                if(i === possible.y && j === possible.x){
+                    ctx.fillStyle = "#0000FF"
+                    ctx.beginPath();
+                    ctx.arc(x + half_square_dim, y + half_square_dim, 8, 0, PI_2);
+                    ctx.fill();
+                }
+            }
         }
     }
 }
@@ -70,18 +89,29 @@ const draw_board = () => {
 const chess_click = (evt) => {
     var new_square = get_clicked_square(evt);
     if(selected_square === null){
+        selected_possible_moves = [];
         selected_square = new_square;
+        let possibilities = possible_moves[selected_square.uci];
+        if(possibilities !== undefined){
+            for(let possible of possibilities){
+                let col = possible.charCodeAt(0) - 65;
+                let row = 8 - parseInt(possible[1]);
+                selected_possible_moves.push({x:col, y:row})
+            }
+        }
     }
     else if(new_square.uci === selected_square.uci){
         selected_square = null;
+        selected_possible_moves = [];
     }
     else if(selected_square !== null){
-        console.log(`${selected_square.uci}${new_square.uci}`);
+        //console.log(`${selected_square.uci}${new_square.uci}`);
         let piece = board[selected_square.y][selected_square.x];
         if(player_color === 'White' && piece === piece.toUpperCase() || player_color === 'Black' && piece === piece.toLowerCase()){
             move(selected_square.uci, new_square.uci);
         }
         selected_square = null;
+        selected_possible_moves = [];
     }
     draw_board();
 }
