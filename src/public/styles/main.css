@@ -77,10 +77,7 @@ button:hover{
 .hidden {
     display: none;
 }
-.logged-in {
-    color: green;
-}
-  
-.logged-out {
-    color: red;
+
+#og_opponent{
+    float: right;
 }

@@ -6,6 +6,7 @@ var selected_square = null;
 var possible_moves = null;
 var player_color = null;
 var in_check = false;
+var game_over = false;
 var turn = null;
 
 var selected_possible_moves = [];
@@ -72,6 +73,14 @@ const draw_board = () => {
                     setTimeout(draw_board, 10);
                 }
                 ctx.drawImage(img, x, y, square_dim, square_dim);
+                if(in_check){
+                    if(in_check && turn[0] === color_code && piece_code === 'k'){
+                        ctx.fillStyle = "#FF000080"
+                        ctx.beginPath();
+                        ctx.arc(x + half_square_dim, y + half_square_dim, 10, 0, PI_2);
+                        ctx.fill();
+                    }
+                }
             }
 
             for(let possible of selected_possible_moves){
@@ -155,8 +164,13 @@ const update_from_fen = (fen) => {
 }
 
 const update_board = (data) => {
-    console.log(data);
     possible_moves = data.possible_moves;
+    if(data.turn !== undefined){
+        turn = data.turn;
+    }
+    if(data.check !== undefined){
+        in_check = data.check;
+    }
     if(data.color !== undefined){
         player_color = data.color;
         if(player_color === 'Black'){
@@ -166,5 +180,14 @@ const update_board = (data) => {
     }
     if(data.fen !== undefined){
         update_from_fen(data.fen);
+    }
+    if(data.opponent_id !== undefined){
+        fetch(hostname + `/users/${data.opponent_id}`)
+        .then(res => res.json())
+        .then(data =>{
+            console.log(data.avatar_url )
+            opponent_avatar.src = `${hostname}/${data.avatar_url}`;
+            opponent_username.innerHTML = data.username;
+        })
     }
 }

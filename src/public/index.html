@@ -60,18 +60,19 @@
         <button onclick="sign_up()">Sign Up</button>
     </div>
     <div id="og_home" class="hidden">
+        <div id="og_opponent" class="hidden">
+            <img id="opponent_avatar" class="avatar"/>
+            <h3 id= "opponent_username"></h3>
+            <button onclick="flip()">Flip</button>
+        </div>
         <img id="image_avatar" class="avatar"/>
         <input id="image_chooser" type="file" accept="image/*" class="hidden"/>
         <h3 id="h_username"></h3>
         <button onclick="log_out()">Logout</button>
-
         <div id=og_chessboard class="center hidden">
             <h2 id="game_id_header"></h2>
+            <h2 id="game_status_header"></h2>
             <canvas id="chessboard" width="600" height="600" class="chessboard"></canvas>
-            <div>
-                <img id="opponent_avatar" class="avatar"/>
-                <button onclick="flip()">Flip</button>
-            </div>
         </div>
         <div id="og_play" class="og-form2 center">
             <form name="play">

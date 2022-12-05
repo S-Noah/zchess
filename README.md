@@ -68,10 +68,10 @@ It allows users to create an account and upload a picture. It also allows them t
 | :-: | :----: | :-----------: | :-----: | :------: | :---------: |
 | /*| GET | false | None | `file@public/url` | Gets the file at the public/url |
 | /users | POST | false | `{username:"", password:"", email:"", fullname:""}` | None | Creates a new user |
+| /users/:user_id | GET | false | None | `{"id":"", "username":"", "email":"", "fullname":"", "avatar_url":"", "created_at":"", "updated_at":""}` | Gets a user |
 | /login | POST | false | `{username:"", password:""}` | `{token:""}` | Handles login and returns a token |
-| /me | GET | TRUE | None | `{"id":"", "username":"", "email":"", "fullname":"", "avatar_url":"", "created_at":"", "updated_at":""}` | Gets the authed user |s
+| /me | GET | TRUE | None | `{"id":"", "username":"", "email":"", "fullname":"", "avatar_url":"", "created_at":"", "updated_at":""}` | Gets the authed user |
 | /games | POST | true | `{opponent_id:"", color:"", time_limit:""}` | `{game_id:""}` | Creates a new game and challenges the players |
-| /messages | POST | true | `{game_id:"", content:""}` | None | Creates a chat message |
 | /avatars | POST | true | `{type:"", data:base64("")}` | `{avatar_url:""}` | Uploads a users avatar |
 | /socket.io | GET | true | `{game_id:""}` | `web socket` | socket to stream game events |
 
@@ -107,23 +107,8 @@ It allows users to create an account and upload a picture. It also allows them t
     - id : `INT`,
     - white_id : `INT FOREIGN KEY REFERENCES users`, 
     - black_id : `INT FOREIGN KEY REFERENCES users`, 
-    - time_limit: `INT`,
-    - white_time: `INT`,
-    - black_time: `INT`,
-    - is_active: `BOOLEAN DEFAULT 1`,
-    - fen: `VARCHAR(120)`,
     - created_at: `TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
     - updated_at: `TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`,
-    - moves: `TEXT(500)`,
-  - **messages**:
-    - owner_id : `INT FOREIGN KEY REFERENCES users`, 
-    - game_id : `INT FOREIGN KEY REFERENCES users`, 
-    - created_at: `TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
-    - content: `TEXT(500)`,
-  - **friends**
-    - owner_id : `INT FOREIGN KEY REFERENCES users`, 
-    - friend_id : `INT FOREIGN KEY REFERENCES users`, 
-    - created_at: `TIMESTAMP DEFAULT CURRENT_TIMESTAMP`,
    
 ## Frontend
 
@@ -148,40 +133,15 @@ It allows users to create an account and upload a picture. It also allows them t
 
 ```json
 {
-  "id":"1",
-  "white_id":"2",
-  "black_id":"5",
-  "time_limit":"5:00",
-  "white_time":"5:00",
-  "black_time":"5:00",
-  "fen":"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
-  "moves":"c2c4 e7e5",
-  "created_at":"2022-11-08T04:38:46+0000",
-  "updated_at":"2022-11-08T04:38:46+0000"
+  "color":"White",
+  "opponent_id":1,
+  "fen":null,
+  "possible_moves":[],
+  "check":false,
+  "checkmate":false,
+  "turn":"white"
 }
 ```
-
-##### message
-
-```json
-{
-  "owner_id":"1",
-  "game_id":"2",
-  "content":"Great Move!",
-  "created_at":"2022-11-08T04:38:46+0000"
-}
-```
-
-##### friend
-
-```json
-{
-  "owner_id":"2",
-  "friend_id":"5",
-  "created_at":"2022-11-08T04:38:46+0000"
-}
-```
-
 
 ## Features
 
@@ -199,25 +159,14 @@ It allows users to create an account and upload a picture. It also allows them t
 - [x] Set game time limit.
 - [x] Create home page.
 - [x] Create play_game page.
-- [ ] Create friends window.
 - [x] Create chessboard.
-- [ ] Create chatlog.
-- [ ] Create movelog.
 - [x] Add chess logic to javascript board controller.
 - [x] Add chess logic to backend.
 - [x] Stream a game as json events over time.
-- [ ] Stream a chatlog as json events over time.
 - [x] Create a game.
-- [ ] Add a friend to the game.
 - [x] Challenge another user to the game.
-- [ ] Challenge a friend to the game.
 - [x] Play the game.
-- [ ] Chat in the game.
-- [ ] Review old games.
-- [ ] Add more feedback on chess board.
-- [ ] Show possible moves for a piece.
-- [ ] Show when the game is over.
-- [ ] Allow a user to return to the play menu.
-- [ ] Implement time into chess games.
+- [x] Add more feedback on chess board.
+- [x] Show possible moves for a piece.
 
 

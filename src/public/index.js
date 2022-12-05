@@ -46,7 +46,6 @@ const update = (data) => {
     
 }
 
-
 const upload_image = () => {
     var bearer = localStorage.getItem('bearer');
     if(bearer !== null){
@@ -175,6 +174,7 @@ const play_game = () => {
             console.log(data.game_id);
             setHidden(og_play);
             setHidden(og_chessboard, false);
+            setHidden(og_opponent, false);
             draw_board();
             game_id = data.game_id;
             game_socket(data.game_id)
@@ -199,8 +199,9 @@ const game_socket = (id) => {
 const join_game = () => {
     data = parse_form('join');
     game_socket(data.game_id);
-    setHidden(og_chessboard, false);
     setHidden(og_play);
+    setHidden(og_chessboard, false);
+    setHidden(og_opponent, false);
     game_id = data.game_id;
     game_id_header.innerHTML=`Game ID: ${game_id}`;
 }

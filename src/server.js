@@ -47,27 +47,33 @@ io.on('connection', async (socket) => {
         }
         else{
             let game_id = socket.handshake.query.game_id
-            console.log("JOINING", `game_${game_id}`);
-            socket.join(`game_${game_id}`);
 
-            let game = active_games[game_id];
-            if(game === undefined){
-                return;
-            }
             db.execute('SELECT * FROM games WHERE id = ?', [game_id],
             (err, results, fields) => {
                 if(err) {
                     console.error(err); 
                 }
                 else{
-                    let color;
+                    let color = null;
+                    let opponent_id = null;
                     if(results[0].white_id === decoded.id){
                         color = 'White';
+                        opponent_id = results[0].black_id
                     }
                     else if(results[0].black_id === decoded.id){
                         color = 'Black';
+                        opponent_id = results[0].white_id
                     }
-                    socket.emit('game_start', {color:color, fen:game.exportFEN(), possible_moves:game.moves()});
+                    if(color !== null){
+
+                        let game = active_games[game_id];
+                        if(game === undefined){
+                            return;
+                        }
+                        console.log("JOINING", `game_${game_id}`);
+                        socket.join(`game_${game_id}`);
+                        socket.emit('game_start', {color:color, opponent_id:opponent_id, fen:game.exportFEN(), possible_moves:game.moves()});
+                    }
                 }
             });
         }
@@ -81,7 +87,9 @@ io.on('connection', async (socket) => {
         try{
             game.move(msg.start, msg.stop);
             let game_data = game.exportJson();
-            io.of("/").to(`game_${msg.game_id}`).emit('game_event', {fen:game.exportFEN(), possible_moves:game.moves(), check:game_data.check, check_mate:game_data.checkMate, is_over:game_data.isFinished, turn:game_data.turn});
+            let response_data = {fen:game.exportFEN(), possible_moves:game.moves(), check:game_data.check, check_mate:game_data.checkMate, is_over:game_data.isFinished, turn:game_data.turn};
+            console.log(response_data)
+            io.of("/").to(`game_${msg.game_id}`).emit('game_event', response_data);
         }
         catch(err){
             console.log('ILLEGAL_MOVE')
@@ -89,6 +97,19 @@ io.on('connection', async (socket) => {
     });
 });
 // Endpoints
+/**
+ * Fetch User.
+ * Url Parameters: [user_id]
+ * Response: User Info
+ */
+app.get('/users/:user_id', async (req, res) =>[
+    db.execute('SELECT id, username, fullname, avatar_url, created_at FROM users WHERE id = ?', [req.params.user_id], (err, results, fields) => {
+        if(err) console.log(err);
+        else{
+            res.json(results[0]);
+        }
+    })
+])
 /** 
  * Create User.
  * Parmeters: [email, username, password], (fullname)
@@ -167,7 +188,7 @@ app.post('/login', async (req, res) => {
             argon2.verify(results[0].passhash, req.body.password)
             .then((verified) => {
                 if(verified){
-                    var token = jwt.sign({id:results[0].id, username:req.body.username}, process.env.TOKEN_SECRET, {expiresIn:1000});
+                    var token = jwt.sign({id:results[0].id, username:req.body.username}, process.env.TOKEN_SECRET, {expiresIn:"10h"});
                     res.json({token:token});
                 }
                 else{
